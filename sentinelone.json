@@ -10,6 +10,11 @@
     "python_version": "3",
     "product_version_regex": ".*",
     "publisher": "SentinelOne",
+    "contributors": [
+        {
+          "name": "Abhijeeta Kamble"
+        }
+      ],
     "license": "Copyright (c) SentinelOne, 2018-2021",
     "app_version": "2.2.0",
     "utctime_updated": "2021-02-25T13:25:33.000000Z",
