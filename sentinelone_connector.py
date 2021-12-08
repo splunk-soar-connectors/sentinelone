@@ -172,7 +172,8 @@ class SentineloneConnector(BaseConnector):
                     "apiToken": self.token
                 }
         }
-        ret_val, response = self._make_rest_call('/web/api/v2.1/users/login/by-api-token', action_result, params=None, headers=header, data=json.dumps(body), method='post')
+        ret_val, response = self._make_rest_call(
+            '/web/api/v2.1/users/login/by-api-token', action_result, params=None, headers=header, data=json.dumps(body), method='post')
         if phantom.is_fail(ret_val):
             self.save_progress("Test Connectivity Failed")
             return action_result.get_status()
@@ -220,7 +221,8 @@ class SentineloneConnector(BaseConnector):
                                 "tenant": "true"
                             }
                         }
-                        ret_val, response = self._make_rest_call('/web/api/v2.1/restrictions', action_result, headers=header, method='post', data=json.dumps(body))
+                        ret_val, response = self._make_rest_call(
+                            '/web/api/v2.1/restrictions', action_result, headers=header, method='post', data=json.dumps(body))
                         if phantom.is_fail(ret_val):
                             return action_result.get_status()
                 except Exception:
@@ -247,7 +249,9 @@ class SentineloneConnector(BaseConnector):
             if response['pagination']['totalItems'] == 0:
                 return action_result.set_status(phantom.APP_ERROR, "Hash not found")
             elif response['pagination']['totalItems'] > 1:
-                return action_result.set_status(phantom.APP_ERROR, "Multiple IDs for {hash}: {total_items}".format(hash=hash, total_items=response['pagination']['totalItems']))
+                return action_result.set_status(
+                    phantom.APP_ERROR, "Multiple IDs for {hash}: {total_items}".format(hash=hash,
+                    total_items=response['pagination']['totalItems']))
             else:
                 hash_id = response['data'][0]['id']
                 body = {
@@ -256,7 +260,8 @@ class SentineloneConnector(BaseConnector):
                         "type": "black_hash"
                     }
                 }
-                ret_val, response = self._make_rest_call('/web/api/v2.1/restrictions', action_result, headers=header, data=json.dumps(body), params=params, method='delete')
+                ret_val, response = self._make_rest_call(
+                    '/web/api/v2.1/restrictions', action_result, headers=header, data=json.dumps(body), params=params, method='delete')
                 if phantom.is_fail(ret_val):
                     self.save_progress("Deleting Hash Failed.  Error: {0}".format(action_result.get_message()))
                     return action_result.get_status()
@@ -291,7 +296,8 @@ class SentineloneConnector(BaseConnector):
                     "ids": [ret_val],
                 }
             }
-            ret_val, response = self._make_rest_call('/web/api/v2.1/agents/actions/disconnect', action_result, params=None, headers=header, data=json.dumps(body), method='post')
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/agents/actions/disconnect', action_result, params=None, headers=header, data=json.dumps(body), method='post')
             if phantom.is_fail(ret_val):
                 self.save_progress("Quarantine Device Failed.  Error: {0}".format(action_result.get_message()))
                 return action_result.get_status()
@@ -325,7 +331,8 @@ class SentineloneConnector(BaseConnector):
                     "ids": [ret_val],
                 }
             }
-            ret_val, response = self._make_rest_call('/web/api/v2.1/agents/actions/connect', action_result, params=None, headers=header, data=json.dumps(body), method='post')
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/agents/actions/connect', action_result, params=None, headers=header, data=json.dumps(body), method='post')
             if phantom.is_fail(ret_val):
                 self.save_progress("Unquarantine Device Failed.  Error: {0}".format(action_result.get_message()))
                 return action_result.get_status()
@@ -349,7 +356,8 @@ class SentineloneConnector(BaseConnector):
                 "ids": [s1_threat_id],
             }
         }
-        ret_val, response = self._make_rest_call('/web/api/v2.1/threats/mitigate/{}'.format(action), action_result, headers=header, data=json.dumps(body), method='post')
+        ret_val, response = self._make_rest_call(
+            '/web/api/v2.1/threats/mitigate/{}'.format(action), action_result, headers=header, data=json.dumps(body), method='post')
         if phantom.is_fail(ret_val):
             self.save_progress("Failed to mitigate threat. Error: {0}".format(action_result.get_message()))
             return action_result.get_status()
@@ -387,7 +395,8 @@ class SentineloneConnector(BaseConnector):
                     "ids": ret_val
                 }
             }
-            ret_val, response = self._make_rest_call('/web/api/v2.1/agents/actions/abort-scan', action_result, headers=header, data=json.dumps(body), method='post')
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/agents/actions/abort-scan', action_result, headers=header, data=json.dumps(body), method='post')
             self.save_progress("Ret_val: {0}".format(ret_val))
             if phantom.is_fail(ret_val):
                 self.save_progress("Failed to abort scan. Error: {0}".format(action_result.get_message()))
@@ -421,7 +430,8 @@ class SentineloneConnector(BaseConnector):
                     "ids": ret_val
                 }
             }
-            ret_val, response = self._make_rest_call('/web/api/v2.1/agents/actions/initiate-scan', action_result, headers=header, data=json.dumps(body), method='post')
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/agents/actions/initiate-scan', action_result, headers=header, data=json.dumps(body), method='post')
             self.save_progress("Ret_val: {0}".format(ret_val))
             if phantom.is_fail(ret_val):
                 self.save_progress("Failed to scan endpoint. Error: {0}".format(action_result.get_message()))
@@ -455,7 +465,8 @@ class SentineloneConnector(BaseConnector):
                     "ids": ret_val
                 }
             }
-            ret_val, response = self._make_rest_call('/web/api/v2.1/agents/actions/shutdown', action_result, headers=header, data=json.dumps(body), method='post')
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/agents/actions/shutdown', action_result, headers=header, data=json.dumps(body), method='post')
             self.save_progress("Ret_val: {0}".format(ret_val))
             if phantom.is_fail(ret_val):
                 self.save_progress("Failed to shutdown endpoint. Error: {0}".format(action_result.get_message()))
@@ -494,7 +505,8 @@ class SentineloneConnector(BaseConnector):
                     "ids": ret_val
                 }
             }
-            ret_val, response = self._make_rest_call('/web/api/v2.1/agents/actions/broadcast', action_result, headers=header, data=json.dumps(body), method='post')
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/agents/actions/broadcast', action_result, headers=header, data=json.dumps(body), method='post')
             self.save_progress("Ret_val: {0}".format(ret_val))
             if phantom.is_fail(ret_val):
                 self.save_progress("Failed to broadcast message. Error: {0}".format(action_result.get_message()))
@@ -818,7 +830,8 @@ class SentineloneConnector(BaseConnector):
                 if tag_ids is not None or len(tag_ids) > 0:
                     tag_ids = tag_ids.split(',')
                     body['data']['tagIds'] = tag_ids
-            ret_val, response = self._make_rest_call('/web/api/v2.1/firewall-control', action_result, headers=header, method='post', data=json.dumps(body))
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/firewall-control', action_result, headers=header, method='post', data=json.dumps(body))
             action_result.add_data(response)
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
@@ -879,7 +892,8 @@ class SentineloneConnector(BaseConnector):
                             "tenant": "true"
                           }
                     }
-            ret_val, response = self._make_rest_call('/web/api/v2.1/threats/notes', action_result, headers=header, method='post', data=json.dumps(body))
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/threats/notes', action_result, headers=header, method='post', data=json.dumps(body))
             action_result.add_data(response)
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
@@ -967,7 +981,8 @@ class SentineloneConnector(BaseConnector):
                             "tenant": "true"
                         }
                     }
-            ret_val, response = self._make_rest_call('/web/api/v2.1/threats/fetch-file', action_result, headers=header, method='post', data=json.dumps(body))
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/threats/fetch-file', action_result, headers=header, method='post', data=json.dumps(body))
             action_result.add_data(response)
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
@@ -1002,7 +1017,8 @@ class SentineloneConnector(BaseConnector):
                             "tenant": "true"
                         }
                     }
-            ret_val, response = self._make_rest_call('/web/api/v2.1/threats/analyst-verdict', action_result, headers=header, method='post', data=json.dumps(body))
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/threats/analyst-verdict', action_result, headers=header, method='post', data=json.dumps(body))
             action_result.add_data(response)
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
@@ -1031,7 +1047,8 @@ class SentineloneConnector(BaseConnector):
             while next:
                 if response["pagination"]["nextCursor"] is not None:
                     params = {"cursor": response["pagination"]["nextCursor"]}
-                    ret_val, response = self._make_rest_call('/web/api/v2.1/threats/{}/timeline'.format(s1_threat_id), action_result, headers=header, params=params)
+                    ret_val, response = self._make_rest_call(
+                        '/web/api/v2.1/threats/{}/timeline'.format(s1_threat_id), action_result, headers=header, params=params)
                     action_result.add_data(response)
                 else:
                     next = False
@@ -1061,7 +1078,8 @@ class SentineloneConnector(BaseConnector):
                             "tenant": "true"
                         }
                     }
-            ret_val, response = self._make_rest_call('/web/api/v2.1/threats/incident', action_result, headers=header, method='post', data=json.dumps(body))
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/threats/incident', action_result, headers=header, method='post', data=json.dumps(body))
             action_result.add_data(response)
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
@@ -1080,7 +1098,8 @@ class SentineloneConnector(BaseConnector):
         header = self.HEADER
         header["Authorization"] = "APIToken %s" % self.token
         try:
-            ret_val, response = self._make_rest_call('/web/api/v2.1/threats/{}/download-from-cloud'.format(s1_threat_id), action_result, headers=header)
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/threats/{}/download-from-cloud'.format(s1_threat_id), action_result, headers=header)
             action_result.add_data(response)
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
@@ -1139,7 +1158,8 @@ class SentineloneConnector(BaseConnector):
     def _get_report_id(self, search_text, action_result):
         header = self.HEADER
         header["Authorization"] = "APIToken %s" % self.token
-        report_id, response = self._make_rest_call('/web/api/v2.1/private/threats/{}/analysis'.format(search_text), action_result, headers=header, method='get')
+        report_id, response = self._make_rest_call(
+            '/web/api/v2.1/private/threats/{}/analysis'.format(search_text), action_result, headers=header, method='get')
         if phantom.is_fail(report_id):
             return str(-1)
         try:
@@ -1224,7 +1244,8 @@ class SentineloneConnector(BaseConnector):
         else:
             start_time = self._state.get('last_ingestion_time', end_time - SENTINELONE_24_HOUR_GAP)
         self._log.info(('action=on_poll start_time={} end_time={} container_count={}').format(start_time, end_time, container_count))
-        response_status, threats_list = self._get_alerts(action_result=action_result, start_time=start_time, end_time=end_time, max_limit=container_count)
+        response_status, threats_list = self._get_alerts(
+            action_result=action_result, start_time=start_time, end_time=end_time, max_limit=container_count)
         if phantom.is_fail(response_status):
             return action_result.get_status()
         if threats_list:
