@@ -20,7 +20,7 @@
     "utctime_updated": "2021-02-25T13:25:33.000000Z",
     "package_name": "phantom_sentinelone",
     "main_module": "sentinelone_connector.py",
-    "min_phantom_version": "4.9.39220",
+    "min_phantom_version": "5.0.0",
     "app_wizard_version": "1.0.0",
     "configuration": {
         "sentinelone_console_url": {
@@ -40,7 +40,7 @@
     "actions": [
         {
             "action": "test connectivity",
-            "description": "Validate the asset configuration for connectivity using supplied configuration.",
+            "description": "Validate the asset configuration for connectivity using supplied configuration",
             "type": "test",
             "identifier": "test_connectivity",
             "read_only": true,
@@ -50,7 +50,7 @@
         },
         {
             "action": "block hash",
-            "description": "Add a file hash to the global blocklist.",
+            "description": "Add a file hash to the global blocklist",
             "type": "contain",
             "identifier": "block_hash",
             "read_only": false,
@@ -147,7 +147,7 @@
         },
         {
             "action": "unblock hash",
-            "description": "Remove a hash from the global blocklist.",
+            "description": "Remove a hash from the global blocklist",
             "type": "correct",
             "identifier": "unblock_hash",
             "read_only": false,
@@ -217,7 +217,7 @@
         },
         {
             "action": "quarantine device",
-            "description": "Quarantine an endpoint.",
+            "description": "Quarantine an endpoint",
             "type": "contain",
             "identifier": "quarantine_device",
             "undo": "unquarantine device",
@@ -291,7 +291,7 @@
         },
         {
             "action": "unquarantine device",
-            "description": "Unquarantine an endpoint.",
+            "description": "Unquarantine an endpoint",
             "type": "correct",
             "identifier": "unquarantine_device",
             "undo": "quarantine device",
@@ -364,7 +364,7 @@
         },
         {
             "action": "mitigate threat",
-            "description": "Mitigate an identified threat.",
+            "description": "Mitigate an identified threat",
             "verbose": "Mitigate threats such as <b>kill</b>, <b>quarantine</b>, <b>remediate</b>, or <b>rollback-remediation</b>.",
             "type": "correct",
             "identifier": "mitigate_threat",
@@ -455,7 +455,7 @@
         },
         {
             "action": "abort scan",
-            "description": "Stop a Full Disk Scan on endpoint/agent.",
+            "description": "Stop a Full Disk Scan on endpoint/agent",
             "type": "generic",
             "identifier": "abort_scan",
             "read_only": false,
@@ -527,7 +527,7 @@
         },
         {
             "action": "shutdown endpoint",
-            "description": "Shutdown endpoint.",
+            "description": "Shutdown endpoint",
             "type": "generic",
             "identifier": "shutdown_endpoint",
             "read_only": false,
@@ -599,7 +599,7 @@
         },
         {
             "action": "broadcast message",
-            "description": "Send a message through the Agents that users can see.",
+            "description": "Send a message through the Agents that users can see",
             "type": "contain",
             "identifier": "broadcast_message",
             "read_only": false,
@@ -682,7 +682,7 @@
         },
         {
             "action": "fetch files",
-            "description": "Fetch files from endpoints to analyze the root of threats.",
+            "description": "Fetch files from endpoints to analyze the root of threats",
             "type": "contain",
             "identifier": "fetch_files",
             "read_only": false,
@@ -717,16 +717,6 @@
             },
             "output": [
                 {
-                    "data_path": "action_result.parameter.ip_hostname",
-                    "data_type": "string",
-                    "contains": [
-                        "host name",
-                        "ip"
-                    ],
-                    "column_name": "IP Host Name",
-                    "column_order": 0
-                },
-                {
                     "data_path": "action_result.parameter.file_path",
                     "data_type": "string",
                     "contains": [
@@ -738,6 +728,16 @@
                 {
                     "data_path": "action_result.parameter.password",
                     "data_type": "password"
+                },
+                {
+                    "data_path": "action_result.parameter.ip_hostname",
+                    "data_type": "string",
+                    "contains": [
+                        "host name",
+                        "ip"
+                    ],
+                    "column_name": "IP Host Name",
+                    "column_order": 1
                 },
                 {
                     "data_path": "action_result.data",
@@ -783,7 +783,7 @@
         },
         {
             "action": "fetch firewall rules",
-            "description": "Fetch firewall rules.",
+            "description": "Fetch firewall rules",
             "type": "correct",
             "identifier": "fetch_firewall_rules",
             "read_only": false,
@@ -855,7 +855,7 @@
         },
         {
             "action": "fetch firewall logs",
-            "description": "Fetch firewall logs.",
+            "description": "Fetch firewall logs",
             "type": "correct",
             "identifier": "fetch_firewall_logs",
             "read_only": false,
@@ -927,7 +927,7 @@
         },
         {
             "action": "scan endpoint",
-            "description": "Start a Full Disk Scan on endpoint/agent.",
+            "description": "Start a Full Disk Scan on endpoint/agent",
             "type": "generic",
             "identifier": "scan_endpoint",
             "read_only": false,
@@ -999,7 +999,7 @@
         },
         {
             "action": "get endpoint info",
-            "description": "Get detailed information about an endpoint/agent.",
+            "description": "Get detailed information about an endpoint/agent",
             "type": "investigate",
             "identifier": "get_endpoint_info",
             "read_only": true,
@@ -1161,7 +1161,7 @@
         },
         {
             "action": "get threat info",
-            "description": "Get detailed information about a threat.",
+            "description": "Get detailed information about a threat",
             "type": "investigate",
             "identifier": "get_threat_info",
             "read_only": true,
@@ -1414,7 +1414,7 @@
         },
         {
             "action": "get applications",
-            "description": "Get the applications, and their data, installed on endpoints.",
+            "description": "Get the applications, and their data, installed on endpoints",
             "type": "correct",
             "identifier": "get_applications",
             "read_only": false,
@@ -1440,7 +1440,7 @@
                         "ip"
                     ],
                     "column_name": "IP Host Name",
-                    "column_order": 1
+                    "column_order": 0
                 },
                 {
                     "data_path": "action_result.data.*.data.*.agentComputerName",
@@ -1449,13 +1449,13 @@
                         "host name"
                     ],
                     "column_name": "Agent Computer Name",
-                    "column_order": 2
+                    "column_order": 1
                 },
                 {
                     "data_path": "action_result.data.*.data.*.agentDomain",
                     "data_type": "string",
                     "column_name": "Agent Domain",
-                    "column_order": 3,
+                    "column_order": 2,
                     "contains":[
                         "domain"
                     ]
@@ -1464,13 +1464,13 @@
                     "data_path": "action_result.data.*.data.*.agentId",
                     "data_type": "string",
                     "column_name": "Agent ID",
-                    "column_order": 4
+                    "column_order": 3
                 },
                 {
                     "data_path": "action_result.data.*.data.*.agentInfected",
                     "data_type": "boolean",
                     "column_name": "Agent Infected",
-                    "column_order": 5,
+                    "column_order": 4,
                     "example_values": [
                         true,
                         false
@@ -1480,7 +1480,7 @@
                     "data_path": "action_result.data.*.data.*.agentIsActive",
                     "data_type": "boolean",
                     "column_name": "Is Agent Active",
-                    "column_order": 6,
+                    "column_order": 5,
                     "example_values": [
                         true,
                         false
@@ -1490,7 +1490,7 @@
                     "data_path": "action_result.data.*.data.*.agentIsDecommissioned",
                     "data_type": "boolean",
                     "column_name": "Is Decommissioned Agent",
-                    "column_order": 7,
+                    "column_order": 6,
                     "example_values": [
                         true,
                         false
@@ -1500,85 +1500,85 @@
                     "data_path": "action_result.data.*.data.*.agentMachineType",
                     "data_type": "string",
                     "column_name": "Agent Machine Type",
-                    "column_order": 8
+                    "column_order": 7
                 },
                 {
                     "data_path": "action_result.data.*.data.*.agentNetworkStatus",
                     "data_type": "string",
                     "column_name": "Agent Network Status",
-                    "column_order": 9
+                    "column_order": 8
                 },
                 {
                     "data_path": "action_result.data.*.data.*.agentOperationalState",
                     "data_type": "string",
                     "column_name": "Agent Operational State",
-                    "column_order": 10
+                    "column_order": 9
                 },
                 {
                     "data_path": "action_result.data.*.data.*.agentOsType",
                     "data_type": "string",
                     "column_name": "Agent OS Type",
-                    "column_order": 11
+                    "column_order": 10
                 },
                 {
                     "data_path": "action_result.data.*.data.*.agentUuid",
                     "data_type": "string",
                     "column_name": "Agent UUID",
-                    "column_order": 12
+                    "column_order": 11
                 },
                 {
                     "data_path": "action_result.data.*.data.*.agentVersion",
                     "data_type": "string",
                     "column_name": "Agent Version",
-                    "column_order": 13
+                    "column_order": 12
                 },
                 {
                     "data_path": "action_result.data.*.data.*.createdAt",
                     "data_type": "string",
                     "column_name": "Created At",
-                    "column_order": 14
+                    "column_order": 13
                 },
                 {
                     "data_path": "action_result.data.*.data.*.id",
                     "data_type": "string",
                     "column_name": "ID",
-                    "column_order": 15
+                    "column_order": 14
                 },
                 {
                     "data_path": "action_result.data.*.data.*.installedAt",
                     "data_type": "string",
                     "column_name": "Installed At",
-                    "column_order": 16
+                    "column_order": 15
                 },
                 {
                     "data_path": "action_result.data.*.data.*.name",
                     "data_type": "string",
                     "column_name": "Name",
-                    "column_order": 17
+                    "column_order": 16
                 },
                 {
                     "data_path": "action_result.data.*.data.*.osType",
                     "data_type": "string",
                     "column_name": "OS Type",
-                    "column_order": 18
+                    "column_order": 17
                 },
                 {
                     "data_path": "action_result.data.*.data.*.publisher",
                     "data_type": "string",
                     "column_name": "Publisher",
-                    "column_order": 19
+                    "column_order": 18
                 },
                 {
                     "data_path": "action_result.data.*.data.*.riskLevel",
                     "data_type": "string",
                     "column_name": "Risk Level",
-                    "column_order": 20
+                    "column_order": 19
                 },
                 {
                     "data_path": "action_result.data.*.data.*.signed",
                     "data_type": "boolean",
                     "column_name": "Signed",
-                    "column_order": 21,
+                    "column_order": 20,
                     "example_values": [
                         true,
                         false
@@ -1588,25 +1588,25 @@
                     "data_path": "action_result.data.*.data.*.size",
                     "data_type": "numeric",
                     "column_name": "Size",
-                    "column_order": 22
+                    "column_order": 21
                 },
                 {
                     "data_path": "action_result.data.*.data.*.type",
                     "data_type": "string",
                     "column_name": "Type",
-                    "column_order": 23
+                    "column_order": 22
                 },
                 {
                     "data_path": "action_result.data.*.data.*.updatedAt",
                     "data_type": "string",
                     "column_name": "Updated At",
-                    "column_order": 24
+                    "column_order": 23
                 },
                 {
                     "data_path": "action_result.data.*.data.*.agentVersion",
                     "data_type": "string",
                     "column_name": "Version",
-                    "column_order": 25
+                    "column_order": 24
                 },
                 {
                     "data_path": "action_result.status",
@@ -1646,7 +1646,7 @@
         },
         {
             "action": "get cves",
-            "description": "Get known CVEs for applications that are installed on endpoints with Application Risk-enabled Agents.",
+            "description": "Get known CVEs for applications that are installed on endpoints with Application Risk-enabled Agents",
             "type": "correct",
             "identifier": "get_cves",
             "read_only": false,
@@ -1656,55 +1656,55 @@
                     "data_path": "action_result.data.*.data.*.description",
                     "data_type": "string",
                     "column_name": "Description",
-                    "column_order": 1
+                    "column_order": 0
                 },
                 {
                     "data_path": "action_result.data.*.data.*.publishedAt",
                     "data_type": "string",
                     "column_name": "Published At",
-                    "column_order": 2
+                    "column_order": 1
                 },
                 {
                     "data_path": "action_result.data.*.data.*.link",
                     "data_type": "string",
                     "column_name": "Link",
-                    "column_order": 3
+                    "column_order": 2
                 },
                 {
                     "data_path": "action_result.data.*.data.*.updatedAt",
                     "data_type": "string",
                     "column_name": "Updated At",
-                    "column_order": 4
+                    "column_order": 3
                 },
                 {
                     "data_path": "action_result.data.*.data.*.score",
                     "data_type": "numeric",
                     "column_name": "Score",
-                    "column_order": 5
+                    "column_order": 4
                 },
                 {
                     "data_path": "action_result.data.*.data.*.createdAt",
                     "data_type": "string",
                     "column_name": "Created At",
-                    "column_order": 6
+                    "column_order": 5
                 },
                 {
                     "data_path": "action_result.data.*.data.*.riskLevel",
                     "data_type": "string",
                     "column_name": "Risk Level",
-                    "column_order": 7
+                    "column_order": 6
                 },
                 {
                     "data_path": "action_result.data.*.data.*.cveId",
                     "data_type": "string",
                     "column_name": "CVE ID",
-                    "column_order": 8
+                    "column_order": 7
                 },
                 {
                     "data_path": "action_result.data.*.data.*.id",
                     "data_type": "string",
                     "column_name": "id",
-                    "column_order": 9
+                    "column_order": 8
                 },
                 {
                     "data_path": "action_result.status",
@@ -1744,7 +1744,7 @@
         },
         {
             "action": "get devicecontrol events",
-            "description": "Get the data of Device Control events on Windows and macOS endpoints.",
+            "description": "Get the data of Device Control events on Windows and macOS endpoints",
             "type": "investigate",
             "identifier": "get_device_control_events",
             "read_only": true,
@@ -1933,7 +1933,7 @@
         },
         {
             "action": "get firewall rules",
-            "description": "Get the Firewall Control rules for a scope specified.",
+            "description": "Get the Firewall Control rules for a scope specified",
             "type": "correct",
             "identifier": "get_firewall_rules",
             "read_only": false,
@@ -1943,55 +1943,55 @@
                     "data_path": "action_result.data.*.data.*.action",
                     "data_type": "string",
                     "column_name": "Action",
-                    "column_order": 2
+                    "column_order": 0
                 },
                 {
                     "data_path": "action_result.data.*.data.*.application.type",
                     "data_type": "string",
                     "column_name": "Application Type",
-                    "column_order": 3
+                    "column_order": 1
                 },
                 {
                     "data_path": "action_result.data.*.data.*application.values",
                     "data_type": "string",
                     "column_name": "Application Value",
-                    "column_order": 4
+                    "column_order": 2
                 },
                 {
                     "data_path": "action_result.data.*.data.*.createdAt",
                     "data_type": "string",
                     "column_name": "Created At",
-                    "column_order": 5
+                    "column_order": 3
                 },
                 {
                     "data_path": "action_result.data.*.data.*.creator",
                     "data_type": "string",
                     "column_name": "Creator",
-                    "column_order": 6
+                    "column_order": 4
                 },
                 {
                     "data_path": "action_result.data.*.data.*.creatorId",
                     "data_type": "string",
                     "column_name": "Creator ID",
-                    "column_order": 7
+                    "column_order": 5
                 },
                 {
                     "data_path": "action_result.data.*.data.*.description",
                     "data_type": "string",
                     "column_name": "Description",
-                    "column_order": 8
+                    "column_order": 6
                 },
                 {
                     "data_path": "action_result.data.*.data.*.direction",
                     "data_type": "string",
                     "column_name": "Direction",
-                    "column_order": 9
+                    "column_order": 7
                 },
                 {
                     "data_path": "action_result.data.*.data.*.editable",
                     "data_type": "boolean",
                     "column_name": "Editable",
-                    "column_order": 10,
+                    "column_order": 8,
                     "example_values": [
                         true,
                         false
@@ -2001,49 +2001,49 @@
                     "data_path": "action_result.data.*.data.*.id",
                     "data_type": "string",
                     "column_name": "ID",
-                    "column_order": 11
+                    "column_order": 9
                 },
                 {
                     "data_path": "action_result.data.*.data.*.localHost.type",
                     "data_type": "string",
                     "column_name": "Localhost Type",
-                    "column_order": 12
+                    "column_order": 10
                 },
                 {
                     "data_path": "action_result.data.*.data.*.localHost.values",
                     "data_type": "string",
                     "column_name": "Localhost value",
-                    "column_order": 13
+                    "column_order": 11
                 },
                 {
                     "data_path": "action_result.data.*.data.*.localPort.type",
                     "data_type": "string",
                     "column_name": "Localport Type",
-                    "column_order": 14
+                    "column_order": 12
                 },
                 {
                     "data_path": "action_result.data.*.data.*.localPort.values",
                     "data_type": "string",
                     "column_name": "Localport Values",
-                    "column_order": 15
+                    "column_order": 13
                 },
                 {
                     "data_path": "action_result.data.*.data.*.location.type",
                     "data_type": "string",
                     "column_name": "Location Type",
-                    "column_order": 16
+                    "column_order": 14
                 },
                 {
                     "data_path": "action_result.data.*.data.*.location.values",
                     "data_type": "string",
                     "column_name": "Location values",
-                    "column_order": 17
+                    "column_order": 15
                 },
                 {
                     "data_path": "action_result.data.*.data.*.name",
                     "data_type": "string",
                     "column_name": "Rule Name",
-                    "column_order": 18,
+                    "column_order": 16,
                     "contains":[
                         "firewall rule name"
                     ]
@@ -2052,109 +2052,109 @@
                     "data_path": "action_result.data.*.data.*.order",
                     "data_type": "numeric",
                     "column_name": "Order",
-                    "column_order": 19
+                    "column_order": 17
                 },
                 {
                     "data_path": "action_result.data.*.data.*.osType",
                     "data_type": "string",
                     "column_name": "OS Type",
-                    "column_order": 20
+                    "column_order": 18
                 },
                 {
                     "data_path": "action_result.data.*.data.*.osTypes",
                     "data_type": "string",
                     "column_name": "OS Types",
-                    "column_order": 20
+                    "column_order": 19
                 },
                 {
                     "data_path": "action_result.data.*.data.*.protocol",
                     "data_type": "string",
                     "column_name": "Protocol",
-                    "column_order": 22
+                    "column_order": 20
                 },
                 {
                     "data_path": "action_result.data.*.data.*.remoteHost.type",
                     "data_type": "string",
                     "column_name": "RemoteHost Type",
-                    "column_order": 23
+                    "column_order": 21
                 },
                 {
                     "data_path": "action_result.data.*.data.*.remoteHost.values",
                     "data_type": "string",
                     "column_name": "RemoteHost Values",
-                    "column_order": 24
+                    "column_order": 22
                 },
                 {
                     "data_path": "action_result.data.*.data.*.remoteHosts.*.type",
                     "data_type": "string",
                     "column_name": "RemoteHosts Type",
-                    "column_order": 25
+                    "column_order": 23
                 },
                 {
                     "data_path": "action_result.data.*.data.*.remoteHosts.*.values",
                     "data_type": "string",
                     "column_name": "RemoteHosts Values",
-                    "column_order": 26
+                    "column_order": 24
                 },
                 {
                     "data_path": "action_result.data.*.data.*.remotePort.type",
                     "data_type": "string",
                     "column_name": "RemotePort Type",
-                    "column_order": 27
+                    "column_order": 25
                 },
                 {
                     "data_path": "action_result.data.*.data.*.remotePort.values",
                     "data_type": "string",
                     "column_name": "RemotePort Values",
-                    "column_order": 28
+                    "column_order": 26
                 },
                 {
                     "data_path": "action_result.data.*.data.*.ruleCategory",
                     "data_type": "string",
                     "column_name": "Rule Category",
-                    "column_order": 29
+                    "column_order": 27
                 },
                 {
                     "data_path": "action_result.data.*.data.*.scope",
                     "data_type": "string",
                     "column_name": "Scope",
-                    "column_order": 30
+                    "column_order": 28
                 },
                 {
                     "data_path": "action_result.data.*.data.*.scopeId",
                     "data_type": "string",
                     "column_name": "Scope ID",
-                    "column_order": 31
+                    "column_order": 29
                 },
                 {
                     "data_path": "action_result.data.*.data.*.status",
                     "data_type": "string",
                     "column_name": "Status",
-                    "column_order": 32
+                    "column_order": 30
                 },
                 {
                     "data_path": "action_result.data.*.data.*.tag",
                     "data_type": "string",
                     "column_name": "Tag",
-                    "column_order": 33
+                    "column_order": 31
                 },
                 {
                     "data_path": "action_result.data.*.data.*.tagIds",
                     "data_type": "string",
                     "column_name": "Tag IDs",
-                    "column_order": 34
+                    "column_order": 32
                 },
                 {
                     "data_path": "action_result.data.*.data.*.tagNames",
                     "data_type": "string",
                     "column_name": "Tag Names",
-                    "column_order": 35
+                    "column_order": 33
                 },
                 {
                     "data_path": "action_result.data.*.data.*.updatedAt",
                     "data_type": "string",
                     "column_name": "Updated At",
-                    "column_order": 37
+                    "column_order": 34
                 },
                 {
                     "data_path": "action_result.status",
@@ -2194,7 +2194,7 @@
         },
         {
             "action": "create firewall rule",
-            "description": "Create a Firewall Control rule.",
+            "description": "Create a Firewall Control rule",
             "type": "contain",
             "identifier": "create_firewall_rule",
             "read_only": false,
@@ -2245,7 +2245,7 @@
                     "data_path": "action_result.parameter.rule_name",
                     "data_type": "string",
                     "column_name": "Rule Name",
-                    "column_order": 1,
+                    "column_order": 0,
                     "contains":[
                         "firewall rule name"
                     ]
@@ -2254,25 +2254,25 @@
                     "data_path": "action_result.parameter.tag_ids",
                     "data_type": "string",
                     "column_name": "Tag ID",
-                    "column_order": 2
+                    "column_order": 1
                 },
                 {
                     "data_path": "action_result.parameter.description",
                     "data_type": "string",
                     "column_name": "Description",
-                    "column_order": 3
+                    "column_order": 2
                 },
                 {
                     "data_path": "action_result.parameter.type",
                     "data_type": "string",
                     "column_name": "Type of remote host",
-                    "column_order": 4
+                    "column_order": 3
                 },
                 {
                     "data_path": "action_result.parameter.value",
                     "data_type": "string",
                     "column_name": "Value of remote host",
-                    "column_order": 5
+                    "column_order": 4
                 },
                 {
                     "data_path": "action_result.data",
@@ -2282,7 +2282,6 @@
                     "data_path": "action_result.status",
                     "data_type": "string",
                     "column_name": "Status",
-                    "column_order": 6,
                     "example_values": [
                         "success",
                         "failed"
@@ -2318,7 +2317,7 @@
         },
         {
             "action": "hash reputation",
-                    "description": "Get the reputation of a hash, given the required SHA1.",
+                    "description": "Get the reputation of a hash, given the required SHA1",
                     "type": "correct",
                     "identifier": "hash_reputation",
                     "read_only": false,
@@ -2388,7 +2387,7 @@
         },
         {
             "action": "get threat notes",
-            "description": "Get the threat notes.",
+            "description": "Get the threat notes",
             "type": "investigate",
             "identifier": "get_threat_notes",
             "read_only": true,
@@ -2498,7 +2497,7 @@
         },
         {
             "action": "add threat note",
-            "description": "Add a threat note to multiple threats.",
+            "description": "Add a threat note to multiple threats",
             "type": "contain",
             "identifier": "add_threat_note",
             "read_only": false,
@@ -2579,7 +2578,7 @@
         },
         {
             "action": "export threat timeline",
-            "description": "Export a threat's timeline.",
+            "description": "Export a threat's timeline",
             "type": "investigate",
             "identifier": "export_threat_timeline",
             "read_only": true,
@@ -2652,7 +2651,7 @@
         },
         {
             "action": "export mitigation report",
-            "description": "Export the mitigation report of threat.",
+            "description": "Export the mitigation report of threat",
             "type": "investigate",
             "identifier": "export_mitigation_report",
             "read_only": true,
@@ -2725,7 +2724,7 @@
         },
         {
             "action": "export threats",
-            "description": "Export data of threats.",
+            "description": "Export data of threats",
             "type": "investigate",
             "identifier": "export_threats",
             "read_only": true,
@@ -2800,7 +2799,7 @@
         },
         {
             "action": "fetch threat file",
-            "description": "Fetch a file associated with the threat.",
+            "description": "Fetch a file associated with the threat",
             "type": "contain",
             "identifier": "fetch_threat_file",
             "read_only": false,
@@ -2833,17 +2832,19 @@
                     "column_order": 0
                 },
                 {
+                    "data_path": "action_result.parameter.password",
+                    "data_type": "password",
+                    "column_name": "Password",
+                    "column_order": 1
+                },
+                {
                     "data_path": "action_result.summary.threat_file_download_url",
                     "data_type": "string",
                     "column_name": "Download URL",
-                    "column_order": 1,
+                    "column_order": 2,
                     "contains":[
                         "url"
                     ]
-                },
-                {
-                    "data_path": "action_result.parameter.password",
-                    "data_type": "password"
                 },
                 {
                     "data_path": "action_result.data",
@@ -2889,7 +2890,7 @@
         },
         {
             "action": "update threat analystverdict",
-            "description": "Change the verdict of a threat, as determined by a Console user.",
+            "description": "Change the verdict of a threat, as determined by a Console user",
             "type": "contain",
             "identifier": "update_threat_analyst_verdict",
             "read_only": false,
@@ -2976,7 +2977,7 @@
         },
         {
             "action": "get threat timeline",
-            "description": "Get a threat's timeline.",
+            "description": "Get a threat's timeline",
             "type": "investigate",
             "identifier": "get_threat_timeline",
             "read_only": true,
@@ -3200,7 +3201,7 @@
         },
         {
             "action": "update threat incident",
-            "description": "Update the incident details of a threat.",
+            "description": "Update the incident details of a threat",
             "type": "contain",
             "identifier": "update_threat_incident",
             "read_only": false,
@@ -3303,7 +3304,7 @@
         },
         {
             "action": "download from cloud",
-            "description": "Download threat file from cloud.",
+            "description": "Download threat file from cloud",
             "type": "investigate",
             "identifier": "download_from_cloud",
             "read_only": true,
@@ -3385,7 +3386,7 @@
         },
         {
             "action": "on poll",
-            "description": "Callback action for the on_poll ingest functionality.",
+            "description": "Callback action for the on_poll ingest functionality",
             "type": "ingest",
             "identifier": "on_poll",
             "read_only": true,
