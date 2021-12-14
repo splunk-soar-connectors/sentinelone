@@ -5,17 +5,20 @@
 #
 
 from __future__ import print_function, unicode_literals
-import phantom.app as phantom
-from phantom.base_connector import BaseConnector
-from phantom.action_result import ActionResult
-from sentinelone_consts import *
-from sentinelone_utilities import KennyLoggins, logging
-import requests
+
 import json
 import time
-from bs4 import BeautifulSoup
 from datetime import datetime
 from urllib.parse import unquote
+
+import phantom.app as phantom
+import requests
+from bs4 import BeautifulSoup
+from phantom.action_result import ActionResult
+from phantom.base_connector import BaseConnector
+
+from sentinelone_consts import *
+from sentinelone_utilities import KennyLoggins, logging
 
 
 class RetVal(tuple):
@@ -1413,8 +1416,9 @@ class SentineloneConnector(BaseConnector):
 
 
 def main():
-    import pudb
     import argparse
+
+    import pudb
     pudb.set_trace()
     argparser = argparse.ArgumentParser()
     argparser.add_argument('input_test_json', help='Input Test JSON file')
