@@ -681,7 +681,7 @@
             "versions": "EQ(*)"
         },
         {
-            "action": "fetch files",
+            "action": "get files",
             "description": "Fetch files from endpoints to analyze the root of threats",
             "type": "contain",
             "identifier": "fetch_files",
@@ -1414,7 +1414,7 @@
             "versions": "EQ(*)"
         },
         {
-            "action": "get applications",
+            "action": "list applications",
             "description": "Get the applications, and their data, installed on endpoints",
             "type": "correct",
             "identifier": "get_applications",
@@ -1933,7 +1933,7 @@
             "versions": "EQ(*)"
         },
         {
-            "action": "get firewall rules",
+            "action": "list firewall rules",
             "description": "Get the Firewall Control rules for a scope specified",
             "type": "correct",
             "identifier": "get_firewall_rules",
