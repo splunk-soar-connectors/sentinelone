@@ -681,7 +681,7 @@
             "versions": "EQ(*)"
         },
         {
-            "action": "get files",
+            "action": "get file",
             "description": "Fetch files from endpoints to analyze the root of threats",
             "type": "contain",
             "identifier": "fetch_files",
