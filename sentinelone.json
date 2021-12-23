@@ -10,6 +10,7 @@
     "python_version": "3",
     "product_version_regex": ".*",
     "publisher": "SentinelOne",
+    "fips_compliant" : "false",
     "contributors": [
         {
           "name": "Abhijeeta Kamble"
