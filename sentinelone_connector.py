@@ -1,5 +1,5 @@
 # File: sentinelone_connector.py
-# Copyright (c) SentinelOne, 2018-2021
+# Copyright (c) SentinelOne, 2018-2022
 #
 # Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)
 #
@@ -190,6 +190,10 @@ class SentineloneConnector(BaseConnector):
         hash = param['hash']
         description = param['description']
         os_family = param['os_family']
+        if os_family not in OS_FAMILY_LIST:
+            msg = ("Please provide a valid value in the 'os_family' action parameter. ",
+                   "Expected values are {}".format(OS_FAMILY_LIST))
+            return action_result.set_status(phantom.APP_SUCCESS, msg)
         try:
             site_ids = self._get_site_id(action_result)
         except Exception:
@@ -348,6 +352,10 @@ class SentineloneConnector(BaseConnector):
         action_result = self.add_action_result(ActionResult(dict(param)))
         s1_threat_id = param['s1_threat_id']
         action = param['action']
+        if action not in ACTION_LIST:
+            msg = ("Please provide a valid value in the 'action' action parameter. ",
+                   "Expected values are {}".format(ACTION_LIST))
+            return action_result.set_status(phantom.APP_SUCCESS, msg)
         summary = action_result.update_summary({})
         summary['s1_threat_id'] = s1_threat_id
         summary['action'] = action
@@ -551,7 +559,7 @@ class SentineloneConnector(BaseConnector):
             # giving time to fetch file and generate download_url
             time.sleep(30)
             download_id = self._get_download_id(action_result)
-            download_url = self._base_url + '/web/api/v2.1{}'.format(download_id)
+            download_url = '{}/web/api/v2.1{}'.format(self._base_url, download_id)
             summary['download_url'] = download_url
             if phantom.is_fail(ret_val):
                 self.save_progress("Failed to fetch files. Error: {0}".format(action_result.get_message()))
@@ -787,6 +795,10 @@ class SentineloneConnector(BaseConnector):
         tag_ids = param.get('tag_ids')
         description = param["description"]
         type = param["type"]
+        if type not in TYPE_LIST:
+            msg = ("Please provide a valid value in the 'type' action parameter. ",
+                   "Expected values are {}".format(TYPE_LIST))
+            return action_result.set_status(phantom.APP_SUCCESS, msg)
         value = param["value"]
         try:
             site_ids = self._get_site_id(action_result)
@@ -914,7 +926,7 @@ class SentineloneConnector(BaseConnector):
         if threat_id_found == "-1":
             return action_result.set_status(phantom.APP_ERROR, "Threat ID is invalid")
         try:
-            action_result.add_data(self._base_url + '/web/api/v2.1/export/threats/{}/timeline'.format(s1_threat_id))
+            action_result.add_data('{}/web/api/v2.1/export/threats/{}/timeline'.format(self._base_url, s1_threat_id))
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         return action_result.set_status(phantom.APP_SUCCESS, "Successfully exported threat timeline.")
@@ -933,7 +945,7 @@ class SentineloneConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, "Threat is not mitigated")
         try:
             report_id = self._get_report_id(s1_threat_id, action_result)
-            action_result.add_data(self._base_url + '/web/api/v2.1{}'.format(report_id))
+            action_result.add_data('{}/web/api/v2.1{}'.format(self._base_url, report_id))
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         return action_result.set_status(phantom.APP_SUCCESS, "Successfully exported mitigation report.")
@@ -958,9 +970,9 @@ class SentineloneConnector(BaseConnector):
                     summary = action_result.update_summary({})
                     summary['ip_hostname'] = ip_hostname
                     summary['agent_id'] = ret_val
-                action_result.add_data(self._base_url + '/web/api/v2.1/threats/export?agentIds={}'.format(ret_val))
+                action_result.add_data('{}/web/api/v2.1/threats/export?agentIds={}'.format(self._base_url, ret_val))
             else:
-                action_result.add_data(self._base_url + '/web/api/v2.1/threats/export')
+                action_result.add_data('{}/web/api/v2.1/threats/export'.format(self._base_url))
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         return action_result.set_status(phantom.APP_SUCCESS, "Successfully exported threats.")
@@ -994,7 +1006,7 @@ class SentineloneConnector(BaseConnector):
         # giving time to fetch file and generate download_url
         time.sleep(30)
         threat_file_download_endpoint = self._get_threat_file_download_url(s1_threat_id, action_result)
-        threat_file_download_url = self._base_url + '/web/api/v2.1{}'.format(threat_file_download_endpoint)
+        threat_file_download_url = '{}/web/api/v2.1{}'.format(self._base_url, threat_file_download_endpoint)
         summary['threat_file_download_url'] = threat_file_download_url
         if phantom.is_fail(ret_val):
             self.save_progress("Failed to fetch threat file. Error: {0}".format(action_result.get_message()))
@@ -1005,6 +1017,10 @@ class SentineloneConnector(BaseConnector):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         action_result = self.add_action_result(ActionResult(dict(param)))
         analyst_verdict = param['analyst_verdict']
+        if analyst_verdict not in ANALYSIS_VERDICT_LIST:
+            msg = ("Please provide a valid value in the 'analyst_verdict' action parameter. ",
+                   "Expected values are {}".format(ANALYSIS_VERDICT_LIST))
+            return action_result.set_status(phantom.APP_SUCCESS, msg)
         s1_threat_id = param['s1_threat_id']
         summary = action_result.update_summary({})
         summary['s1_threat_id'] = s1_threat_id
@@ -1064,7 +1080,15 @@ class SentineloneConnector(BaseConnector):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         action_result = self.add_action_result(ActionResult(dict(param)))
         analyst_verdict = param['analyst_verdict']
+        if analyst_verdict not in ANALYSIS_VERDICT_LIST:
+            msg = ("Please provide a valid value in the 'analyst_verdict' action parameter. ",
+                   "Expected values are {}".format(ANALYSIS_VERDICT_LIST))
+            return action_result.set_status(phantom.APP_SUCCESS, msg)
         incident_status = param['incident_status']
+        if incident_status not in INCIDENT_STATUS_LIST:
+            msg = ("Please provide a valid value in the 'incident_status' action parameter. ",
+                   "Expected values are {}".format(INCIDENT_STATUS_LIST))
+            return action_result.set_status(phantom.APP_SUCCESS, msg)
         s1_threat_id = param['s1_threat_id']
         summary = action_result.update_summary({})
         summary['s1_threat_id'] = s1_threat_id

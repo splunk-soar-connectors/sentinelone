@@ -10,13 +10,13 @@
     "python_version": "3",
     "product_version_regex": ".*",
     "publisher": "SentinelOne",
-    "fips_compliant" : "false",
+    "fips_compliant": "false",
     "contributors": [
         {
-          "name": "Abhijeeta Kamble"
+            "name": "Abhijeeta Kamble"
         }
-      ],
-    "license": "Copyright (c) SentinelOne, 2018-2021",
+    ],
+    "license": "Copyright (c) SentinelOne, 2018-2022",
     "app_version": "2.2.0",
     "utctime_updated": "2021-02-25T13:25:33.000000Z",
     "package_name": "phantom_sentinelone",
@@ -232,7 +232,6 @@
                     "contains": [
                         "host name",
                         "ip"
-
                     ],
                     "order": 0
                 }
@@ -1119,7 +1118,7 @@
                     "data_type": "string",
                     "column_name": "Domain",
                     "column_order": 12,
-                    "contains":[
+                    "contains": [
                         "domain"
                     ]
                 },
@@ -1331,7 +1330,7 @@
                     "data_type": "string",
                     "column_name": "Hash",
                     "column_order": 20,
-                    "contains":[
+                    "contains": [
                         "sha1"
                     ]
                 },
@@ -1362,7 +1361,7 @@
                     "data_type": "string",
                     "column_name": "File Path",
                     "column_order": 24,
-                    "contains":[
+                    "contains": [
                         "file path"
                     ]
                 },
@@ -1424,7 +1423,6 @@
                 "ip_hostname": {
                     "description": "The IP or hostname of an endpoint to get applications",
                     "data_type": "string",
-                    "required": false,
                     "primary": true,
                     "contains": [
                         "host name",
@@ -1458,7 +1456,7 @@
                     "data_type": "string",
                     "column_name": "Agent Domain",
                     "column_order": 2,
-                    "contains":[
+                    "contains": [
                         "domain"
                     ]
                 },
@@ -1705,7 +1703,7 @@
                 {
                     "data_path": "action_result.data.*.data.*.id",
                     "data_type": "string",
-                    "column_name": "id",
+                    "column_name": "ID",
                     "column_order": 8
                 },
                 {
@@ -1752,17 +1750,17 @@
             "read_only": true,
             "parameters": {
                 "ip_hostname": {
-                "description": "The IP or hostname of an endpoint to get information",
-                "data_type": "string",
-                "required": true,
-                "primary": true,
-                "contains": [
-                    "host name",
-                    "ip"
-                ],
-                "order": 0
-            }
-        },
+                    "description": "The IP or hostname of an endpoint to get information",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [
+                        "host name",
+                        "ip"
+                    ],
+                    "order": 0
+                }
+            },
             "output": [
                 {
                     "data_path": "action_result.parameter.ip_hostname",
@@ -1831,7 +1829,7 @@
                 {
                     "data_path": "action_result.data.*.data.*.interface",
                     "data_type": "string",
-                    "column_name": "interface",
+                    "column_name": "Interface",
                     "column_order": 10
                 },
                 {
@@ -1839,14 +1837,14 @@
                     "data_type": "string",
                     "column_name": "Last Logged In Username",
                     "column_order": 11,
-                    "contains":[
+                    "contains": [
                         "user name"
                     ]
                 },
                 {
                     "data_path": "action_result.data.*.data.*.lmpVersion",
                     "data_type": "string",
-                    "column_name": "lmp Version",
+                    "column_name": "Lmp Version",
                     "column_order": 12
                 },
                 {
@@ -2014,7 +2012,7 @@
                 {
                     "data_path": "action_result.data.*.data.*.localHost.values",
                     "data_type": "string",
-                    "column_name": "Localhost value",
+                    "column_name": "Localhost Value",
                     "column_order": 11
                 },
                 {
@@ -2038,7 +2036,7 @@
                 {
                     "data_path": "action_result.data.*.data.*.location.values",
                     "data_type": "string",
-                    "column_name": "Location values",
+                    "column_name": "Location Values",
                     "column_order": 15
                 },
                 {
@@ -2046,7 +2044,7 @@
                     "data_type": "string",
                     "column_name": "Rule Name",
                     "column_order": 16,
-                    "contains":[
+                    "contains": [
                         "firewall rule name"
                     ]
                 },
@@ -2077,37 +2075,37 @@
                 {
                     "data_path": "action_result.data.*.data.*.remoteHost.type",
                     "data_type": "string",
-                    "column_name": "RemoteHost Type",
+                    "column_name": "Remotehost Type",
                     "column_order": 21
                 },
                 {
                     "data_path": "action_result.data.*.data.*.remoteHost.values",
                     "data_type": "string",
-                    "column_name": "RemoteHost Values",
+                    "column_name": "Remotehost Values",
                     "column_order": 22
                 },
                 {
                     "data_path": "action_result.data.*.data.*.remoteHosts.*.type",
                     "data_type": "string",
-                    "column_name": "RemoteHosts Type",
+                    "column_name": "Remotehosts Type",
                     "column_order": 23
                 },
                 {
                     "data_path": "action_result.data.*.data.*.remoteHosts.*.values",
                     "data_type": "string",
-                    "column_name": "RemoteHosts Values",
+                    "column_name": "Remotehosts Values",
                     "column_order": 24
                 },
                 {
                     "data_path": "action_result.data.*.data.*.remotePort.type",
                     "data_type": "string",
-                    "column_name": "RemotePort Type",
+                    "column_name": "Remoteport Type",
                     "column_order": 25
                 },
                 {
                     "data_path": "action_result.data.*.data.*.remotePort.values",
                     "data_type": "string",
-                    "column_name": "RemotePort Values",
+                    "column_name": "Remoteport Values",
                     "column_order": 26
                 },
                 {
@@ -2206,24 +2204,24 @@
                     "data_type": "string",
                     "required": true,
                     "order": 0,
-                    "contains":[
+                    "contains": [
                         "firewall rule name"
-                    ]
+                    ],
+                    "primary": true
                 },
                 "tag_ids": {
                     "description": "Tag id",
                     "data_type": "string",
-                    "required": false,
                     "order": 1
                 },
-                "description":{
+                "description": {
                     "description": "Description",
                     "data_type": "string",
                     "required": true,
                     "default": "Added via Phantom",
                     "order": 2
                 },
-                "type":{
+                "type": {
                     "description": "Type of the remote host",
                     "data_type": "string",
                     "required": true,
@@ -2235,12 +2233,12 @@
                     "default": "fqdn",
                     "order": 3
                 },
-                "value":{
+                "value": {
                     "description": "Value of the remote host",
                     "data_type": "string",
                     "required": true,
                     "order": 4
-                }    
+                }
             },
             "output": [
                 {
@@ -2248,7 +2246,7 @@
                     "data_type": "string",
                     "column_name": "Rule Name",
                     "column_order": 0,
-                    "contains":[
+                    "contains": [
                         "firewall rule name"
                     ]
                 },
@@ -2267,13 +2265,13 @@
                 {
                     "data_path": "action_result.parameter.type",
                     "data_type": "string",
-                    "column_name": "Type of remote host",
+                    "column_name": "Type Of Remote Host",
                     "column_order": 3
                 },
                 {
                     "data_path": "action_result.parameter.value",
                     "data_type": "string",
-                    "column_name": "Value of remote host",
+                    "column_name": "Value Of Remote Host",
                     "column_order": 4
                 },
                 {
@@ -2319,73 +2317,73 @@
         },
         {
             "action": "hash reputation",
-                    "description": "Get the reputation of a hash, given the required SHA1",
-                    "type": "correct",
-                    "identifier": "hash_reputation",
-                    "read_only": false,
-                   "parameters": {
-                        "hash": {
-                            "description": "Hash of a file to get the reputation",
-                            "data_type": "string",
-                            "required": true,
-                            "primary": true,
-                            "contains": [
-                                "sha1"
-                            ],
-                            "order": 0
-                        }
-                    },
-                    "output": [
-                        {
-                            "data_path": "action_result.parameter.hash",
-                            "data_type": "string",
-                            "contains": [
-                                "sha1"
-                            ],
-                            "column_name": "Hash",
-                            "column_order": 0
-                        },
-                        {
-                            "data_path": "action_result.data.*.data.*.data.*.rank",
-                            "data_type": "string",
-                            "column_name": "Rank",
-                            "column_order": 1
-                        },
-                        {
-                            "data_path": "action_result.status",
-                            "data_type": "string",
-                            "example_values": [
-                                "success",
-                                "failed"
-                            ]
-                        },
-                        {
-                            "data_path": "action_result.message",
-                            "data_type": "string"
-                        },
-                        {
-                            "data_path": "action_result.summary",
-                            "data_type": "string"
-                        },
-                        {
-                            "data_path": "summary.total_objects",
-                            "data_type": "numeric",
-                            "example_value": [
-                                1
-                            ]
-                        },
-                        {
-                            "data_path": "summary.total_objects_successful",
-                            "data_type": "numeric",
-                            "example_value": [
-                                1
-                            ]
-                        }
+            "description": "Get the reputation of a hash, given the required SHA1",
+            "type": "correct",
+            "identifier": "hash_reputation",
+            "read_only": false,
+            "parameters": {
+                "hash": {
+                    "description": "Hash of a file to get the reputation",
+                    "data_type": "string",
+                    "required": true,
+                    "primary": true,
+                    "contains": [
+                        "sha1"
                     ],
-                    "render": {
-                        "type": "table"
-                    },
-                    "versions": "EQ(*)"
+                    "order": 0
+                }
+            },
+            "output": [
+                {
+                    "data_path": "action_result.parameter.hash",
+                    "data_type": "string",
+                    "contains": [
+                        "sha1"
+                    ],
+                    "column_name": "Hash",
+                    "column_order": 0
+                },
+                {
+                    "data_path": "action_result.data.*.data.*.data.*.rank",
+                    "data_type": "string",
+                    "column_name": "Rank",
+                    "column_order": 1
+                },
+                {
+                    "data_path": "action_result.status",
+                    "data_type": "string",
+                    "example_values": [
+                        "success",
+                        "failed"
+                    ]
+                },
+                {
+                    "data_path": "action_result.message",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "action_result.summary",
+                    "data_type": "string"
+                },
+                {
+                    "data_path": "summary.total_objects",
+                    "data_type": "numeric",
+                    "example_value": [
+                        1
+                    ]
+                },
+                {
+                    "data_path": "summary.total_objects_successful",
+                    "data_type": "numeric",
+                    "example_value": [
+                        1
+                    ]
+                }
+            ],
+            "render": {
+                "type": "table"
+            },
+            "versions": "EQ(*)"
         },
         {
             "action": "get threat notes",
@@ -2611,7 +2609,7 @@
                     "data_type": "string",
                     "column_name": "Download URL",
                     "column_order": 1,
-                    "contains":[
+                    "contains": [
                         "url"
                     ]
                 },
@@ -2684,7 +2682,7 @@
                     "data_type": "string",
                     "column_name": "Download URL",
                     "column_order": 1,
-                    "contains":[
+                    "contains": [
                         "url"
                     ]
                 },
@@ -2734,7 +2732,6 @@
                 "ip_hostname": {
                     "description": "The IP or hostname of an endpoint",
                     "data_type": "string",
-                    "required": false,
                     "primary": true,
                     "contains": [
                         "host name",
@@ -2742,7 +2739,7 @@
                     ],
                     "order": 0
                 }
-        },
+            },
             "output": [
                 {
                     "data_path": "action_result.parameter.ip_hostname",
@@ -2759,7 +2756,7 @@
                     "data_type": "string",
                     "column_name": "Download URL",
                     "column_order": 1,
-                    "contains":[
+                    "contains": [
                         "url"
                     ]
                 },
@@ -2844,7 +2841,7 @@
                     "data_type": "string",
                     "column_name": "Download URL",
                     "column_order": 2,
-                    "contains":[
+                    "contains": [
                         "url"
                     ]
                 },
@@ -2912,9 +2909,9 @@
                     "required": true,
                     "value_list": [
                         "undefined",
-					    "true_positive",
-					    "false_positive",
-					    "suspicious"
+                        "true_positive",
+                        "false_positive",
+                        "suspicious"
                     ],
                     "default": "undefined",
                     "order": 1
@@ -3051,8 +3048,8 @@
                     "data_type": "string",
                     "column_name": "Engines",
                     "column_order": 8,
-                    "contains":[
-                            "hash"
+                    "contains": [
+                        "hash"
                     ]
                 },
                 {
@@ -3096,7 +3093,7 @@
                     "data_type": "string",
                     "column_name": "Username",
                     "column_order": 15,
-                    "contains":[
+                    "contains": [
                         "user name"
                     ]
                 },
@@ -3111,7 +3108,7 @@
                     "data_type": "string",
                     "column_name": "Hash",
                     "column_order": 17,
-                    "contains":[
+                    "contains": [
                         "hash"
                     ]
                 },
@@ -3120,7 +3117,6 @@
                     "data_type": "string",
                     "column_name": "ID",
                     "column_order": 18
-                    
                 },
                 {
                     "data_path": "action_result.data.*.data.*.osFamily",
