@@ -15,6 +15,7 @@
 from __future__ import print_function, unicode_literals
 
 import json
+import sys
 import time
 from datetime import datetime
 from urllib.parse import unquote
@@ -890,7 +891,7 @@ class SentineloneConnector(BaseConnector):
         header["Authorization"] = "APIToken %s" % self.token
         s1_threat_ids = [value.strip() for value in s1_threat_ids.split(",") if value.strip()]
         if not s1_threat_ids:
-            return action_result.set_status(phantom.APP_ERROR, SENTINELONE_ERR_INVALID_FIELD.format(key="tag_ids"))
+            return action_result.set_status(phantom.APP_ERROR, SENTINELONE_ERR_INVALID_FIELD.format(key="s1_threat_ids"))
         try:
             body = {
                 "data": {
@@ -1449,7 +1450,7 @@ def main():
         try:
             login_url = SentineloneConnector._get_phantom_base_url() + '/login'
             print("Accessing the Login page")
-            r = requests.get(login_url, verify=False)
+            r = requests.get(login_url, verify=False)  # nosemgrep
             csrftoken = r.cookies['csrftoken']
             data = dict()
             data['username'] = username
@@ -1459,11 +1460,11 @@ def main():
             headers['Cookie'] = 'csrftoken=' + csrftoken
             headers['Referer'] = login_url
             print("Logging into Platform to get the session id")
-            r2 = requests.post(login_url, verify=False, data=data, headers=headers)
+            r2 = requests.post(login_url, verify=False, data=data, headers=headers)  # nosemgrep
             session_id = r2.cookies['sessionid']
         except Exception as e:
             print("Unable to get session id from the platform. Error: " + str(e))
-            exit(1)
+            sys.exit(1)
     with open(args.input_test_json) as f:
         in_json = f.read()
         in_json = json.loads(in_json)
@@ -1475,7 +1476,7 @@ def main():
             connector._set_csrf_info(csrftoken, headers['Referer'])
         ret_val = connector._handle_action(json.dumps(in_json), None)
         print(json.dumps(json.loads(ret_val), indent=4))
-    exit(0)
+    sys.exit(0)
 
 
 if __name__ == '__main__':
