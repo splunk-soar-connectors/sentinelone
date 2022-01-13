@@ -10,7 +10,6 @@
     "python_version": "3",
     "product_version_regex": ".*",
     "publisher": "SentinelOne",
-    "fips_compliant": "false",
     "contributors": [
         {
             "name": "Abhijeeta Kamble"
@@ -366,7 +365,7 @@
             "action": "mitigate threat",
             "description": "Mitigate an identified threat",
             "verbose": "Mitigate threats such as <b>kill</b>, <b>quarantine</b>, <b>remediate</b>, or <b>rollback-remediation</b>.",
-            "type": "correct",
+            "type": "generic",
             "identifier": "mitigate_threat",
             "read_only": false,
             "parameters": {
@@ -600,7 +599,7 @@
         {
             "action": "broadcast message",
             "description": "Send a Message through the Agents that users can see",
-            "type": "contain",
+            "type": "generic",
             "identifier": "broadcast_message",
             "read_only": false,
             "parameters": {
@@ -683,9 +682,9 @@
         {
             "action": "get file",
             "description": "Fetch files from endpoints to analyze the root of threats",
-            "type": "contain",
+            "type": "investigate",
             "identifier": "fetch_files",
-            "read_only": false,
+            "read_only": true,
             "parameters": {
                 "file_path": {
                     "description": "The file path of an endpoint",
@@ -785,9 +784,9 @@
         {
             "action": "fetch firewall rules",
             "description": "Fetch firewall rules",
-            "type": "correct",
+            "type": "investigate",
             "identifier": "fetch_firewall_rules",
-            "read_only": false,
+            "read_only": true,
             "parameters": {
                 "ip_hostname": {
                     "description": "The IP or hostname of an endpoint to fetch firewall rules",
@@ -857,9 +856,9 @@
         {
             "action": "fetch firewall logs",
             "description": "Fetch firewall logs",
-            "type": "correct",
+            "type": "investigate",
             "identifier": "fetch_firewall_logs",
-            "read_only": false,
+            "read_only": true,
             "parameters": {
                 "ip_hostname": {
                     "description": "The IP or hostname of an endpoint to fetch firewall logs",
@@ -1416,9 +1415,9 @@
         {
             "action": "list applications",
             "description": "Get the applications, and their data, installed on endpoints",
-            "type": "correct",
+            "type": "investigate",
             "identifier": "get_applications",
-            "read_only": false,
+            "read_only": true,
             "parameters": {
                 "ip_hostname": {
                     "description": "The IP or hostname of an endpoint to get applications",
@@ -1647,9 +1646,9 @@
         {
             "action": "get cves",
             "description": "Get known CVEs for applications that are installed on endpoints with Application Risk-enabled Agents",
-            "type": "correct",
+            "type": "investigate",
             "identifier": "get_cves",
-            "read_only": false,
+            "read_only": true,
             "parameters": {},
             "output": [
                 {
@@ -1934,9 +1933,9 @@
         {
             "action": "list firewall rules",
             "description": "Get the Firewall Control rules for a scope specified",
-            "type": "correct",
+            "type": "investigate",
             "identifier": "get_firewall_rules",
-            "read_only": false,
+            "read_only": true,
             "parameters": {},
             "output": [
                 {
@@ -2075,37 +2074,37 @@
                 {
                     "data_path": "action_result.data.*.data.*.remoteHost.type",
                     "data_type": "string",
-                    "column_name": "Remotehost Type",
+                    "column_name": "RemoteHost Type",
                     "column_order": 21
                 },
                 {
                     "data_path": "action_result.data.*.data.*.remoteHost.values",
                     "data_type": "string",
-                    "column_name": "Remotehost Values",
+                    "column_name": "RemoteHost Values",
                     "column_order": 22
                 },
                 {
                     "data_path": "action_result.data.*.data.*.remoteHosts.*.type",
                     "data_type": "string",
-                    "column_name": "Remotehosts Type",
+                    "column_name": "RemoteHosts Type",
                     "column_order": 23
                 },
                 {
                     "data_path": "action_result.data.*.data.*.remoteHosts.*.values",
                     "data_type": "string",
-                    "column_name": "Remotehosts Values",
+                    "column_name": "RemoteHosts Values",
                     "column_order": 24
                 },
                 {
                     "data_path": "action_result.data.*.data.*.remotePort.type",
                     "data_type": "string",
-                    "column_name": "Remoteport Type",
+                    "column_name": "RemotePort Type",
                     "column_order": 25
                 },
                 {
                     "data_path": "action_result.data.*.data.*.remotePort.values",
                     "data_type": "string",
-                    "column_name": "Remoteport Values",
+                    "column_name": "RemotePort Values",
                     "column_order": 26
                 },
                 {
@@ -2195,7 +2194,7 @@
         {
             "action": "create firewall rule",
             "description": "Create a Firewall Control rule",
-            "type": "contain",
+            "type": "generic",
             "identifier": "create_firewall_rule",
             "read_only": false,
             "parameters": {
@@ -2210,7 +2209,7 @@
                     "primary": true
                 },
                 "tag_ids": {
-                    "description": "Tag id",
+                    "description": "Tag ID (comma separated values)",
                     "data_type": "string",
                     "order": 1
                 },
@@ -2318,9 +2317,9 @@
         {
             "action": "hash reputation",
             "description": "Get the reputation of a hash, given the required SHA1",
-            "type": "correct",
+            "type": "investigate",
             "identifier": "hash_reputation",
-            "read_only": false,
+            "read_only": true,
             "parameters": {
                 "hash": {
                     "description": "Hash of a file to get the reputation",
@@ -2498,12 +2497,12 @@
         {
             "action": "add threat note",
             "description": "Add a threat note to multiple threats",
-            "type": "contain",
+            "type": "generic",
             "identifier": "add_threat_note",
             "read_only": false,
             "parameters": {
                 "s1_threat_ids": {
-                    "description": "The S1 Threat IDs for a specific threats",
+                    "description": "The S1 Threat IDs for specific threats (comma separated values)",
                     "data_type": "string",
                     "required": true,
                     "primary": true,
@@ -2799,7 +2798,7 @@
         {
             "action": "fetch threat file",
             "description": "Fetch a file associated with the threat",
-            "type": "contain",
+            "type": "generic",
             "identifier": "fetch_threat_file",
             "read_only": false,
             "parameters": {
@@ -2889,7 +2888,7 @@
         {
             "action": "update threat analystverdict",
             "description": "Change the verdict of a threat, as determined by a Console user",
-            "type": "contain",
+            "type": "generic",
             "identifier": "update_threat_analyst_verdict",
             "read_only": false,
             "parameters": {
@@ -3199,7 +3198,7 @@
         {
             "action": "update threat incident",
             "description": "Update the incident details of a threat",
-            "type": "contain",
+            "type": "generic",
             "identifier": "update_threat_incident",
             "read_only": false,
             "parameters": {
@@ -3418,5 +3417,37 @@
             "output": [],
             "versions": "EQ(*)"
         }
-    ]
+    ],
+    "pip_dependencies": {
+        "wheel": [
+            {
+                "module": "beautifulsoup4",
+                "input_file": "wheels/beautifulsoup4-4.9.1-py3-none-any.whl"
+            },
+            {
+                "module": "certifi",
+                "input_file": "wheels/certifi-2021.10.8-py2.py3-none-any.whl"
+            },
+            {
+                "module": "chardet",
+                "input_file": "wheels/chardet-3.0.4-py2.py3-none-any.whl"
+            },
+            {
+                "module": "idna",
+                "input_file": "wheels/idna-2.10-py2.py3-none-any.whl"
+            },
+            {
+                "module": "requests",
+                "input_file": "wheels/requests-2.25.0-py2.py3-none-any.whl"
+            },
+            {
+                "module": "soupsieve",
+                "input_file": "wheels/soupsieve-2.3.1-py3-none-any.whl"
+            },
+            {
+                "module": "urllib3",
+                "input_file": "wheels/urllib3-1.26.8-py2.py3-none-any.whl"
+            }
+        ]
+    }
 }
