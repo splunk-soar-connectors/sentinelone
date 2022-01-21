@@ -283,7 +283,9 @@ class SentineloneConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         self.save_progress('Agent query: {}'.format(ret_val))
-        if ret_val == '0':
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
             return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
         elif ret_val == '99':
             return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
@@ -318,7 +320,9 @@ class SentineloneConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         self.save_progress('Agent query: {}'.format(ret_val))
-        if ret_val == '0':
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
             return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
         elif ret_val == '99':
             return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
@@ -383,7 +387,9 @@ class SentineloneConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         self.save_progress('Agent query: {}'.format(ret_val))
-        if ret_val == '0':
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
             return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
         elif ret_val == '99':
             return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
@@ -418,7 +424,9 @@ class SentineloneConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         self.save_progress('Agent query: {}'.format(ret_val))
-        if ret_val == '0':
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
             return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
         elif ret_val == '99':
             return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
@@ -453,7 +461,9 @@ class SentineloneConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         self.save_progress('Agent query: {}'.format(ret_val))
-        if ret_val == '0':
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
             return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
         elif ret_val == '99':
             return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
@@ -490,7 +500,9 @@ class SentineloneConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         self.save_progress('Agent query: {}'.format(ret_val))
-        if ret_val == '0':
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
             return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
         elif ret_val == '99':
             return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
@@ -528,7 +540,9 @@ class SentineloneConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         self.save_progress('Agent query: {}'.format(ret_val))
-        if ret_val == '0':
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
             return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
         elif ret_val == '99':
             return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
@@ -568,7 +582,9 @@ class SentineloneConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         self.save_progress('Agent query: {}'.format(ret_val))
-        if ret_val == '0':
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
             return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
         elif ret_val == '99':
             return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
@@ -603,7 +619,9 @@ class SentineloneConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         self.save_progress('Agent query: {}'.format(ret_val))
-        if ret_val == '0':
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
             return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
         elif ret_val == '99':
             return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
@@ -638,7 +656,9 @@ class SentineloneConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         self.save_progress('Agent query: {}'.format(ret_val))
-        if ret_val == '0':
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
             return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
         elif ret_val == '99':
             return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
@@ -712,11 +732,11 @@ class SentineloneConnector(BaseConnector):
         ret_val, response = self._make_rest_call('/web/api/v2.1/installed-applications/cves', action_result, headers=header)
         action_result.add_data(response)
         self.save_progress("Ret_val: {0}".format(ret_val))
-        if response.get('pagination', {}).get('totalItems') == 0:
-            return action_result.set_status(phantom.APP_SUCCESS, "No CVEs are found")
         if phantom.is_fail(ret_val):
             self.save_progress("Failed to get Cves.  Error: {0}".format(action_result.get_message()))
             return action_result.get_status()
+        if response.get('pagination', {}).get('totalItems') == 0:
+            return action_result.set_status(phantom.APP_SUCCESS, "No CVEs are found")
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_get_device_control_events(self, param):
@@ -728,7 +748,9 @@ class SentineloneConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         self.save_progress('Agent query: {}'.format(ret_val))
-        if ret_val == '0':
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
             return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
         elif ret_val == '99':
             return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
@@ -764,6 +786,10 @@ class SentineloneConnector(BaseConnector):
                 params = {"siteIds": site_id}
                 ret_val, response = self._make_rest_call('/web/api/v2.1/firewall-control', action_result, headers=header, params=params)
                 action_result.add_data(response)
+                self.save_progress("Ret_val: {0}".format(ret_val))
+                if phantom.is_fail(ret_val):
+                    self.save_progress("Failed to get firewall rules.  Error: {0}".format(action_result.get_message()))
+                    return action_result.get_status()
                 next = True
                 while next:
                     if response.get("pagination", {}).get("nextCursor") is not None:
@@ -773,10 +799,6 @@ class SentineloneConnector(BaseConnector):
                     else:
                         next = False
                         break
-                self.save_progress("Ret_val: {0}".format(ret_val))
-                if phantom.is_fail(ret_val):
-                    self.save_progress("Failed to get firewall rules.  Error: {0}".format(action_result.get_message()))
-                    return action_result.get_status()
                 if response.get('pagination', {}).get('totalItems') == 0:
                     return action_result.set_status(phantom.APP_ERROR, "Firewall rules not found")
         else:
@@ -957,7 +979,9 @@ class SentineloneConnector(BaseConnector):
                     return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
                 self.save_progress('Agent query: {}'.format(ret_val))
 
-                if ret_val == '0':
+                if ret_val == '-1':
+                    return action_result.get_status()
+                elif ret_val == '0':
                     return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
                 elif ret_val == '99':
                     return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
