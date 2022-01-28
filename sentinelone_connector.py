@@ -195,6 +195,8 @@ class SentineloneConnector(BaseConnector):
             site_ids = self._get_site_id(action_result)
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        if site_ids == '-1':
+            return action_result.get_status()
         if site_ids:
             for site_id in site_ids:
                 self.save_progress('Agent query: {}'.format(site_id))
@@ -566,6 +568,8 @@ class SentineloneConnector(BaseConnector):
             # giving time to fetch file and generate download_url
             time.sleep(30)
             download_id = self._get_download_id(action_result)
+            if download_id == '-1':
+                return action_result.get_status()
             download_url = '{}/web/api/v2.1{}'.format(self._base_url, download_id)
             summary['download_url'] = download_url
             if phantom.is_fail(ret_val):
@@ -705,7 +709,9 @@ class SentineloneConnector(BaseConnector):
                 return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
             self.save_progress('Agent query: {}'.format(ret_val))
 
-            if ret_val == '0':
+            if ret_val == '-1':
+                return action_result.get_status()
+            elif ret_val == '0':
                 return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
             elif ret_val == '99':
                 return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
@@ -776,6 +782,8 @@ class SentineloneConnector(BaseConnector):
             site_ids = self._get_site_id(action_result)
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        if site_ids == '-1':
+            return action_result.get_status()
         if site_ids:
             for site_id in site_ids:
                 self.save_progress('Agent query: {}'.format(site_id))
@@ -817,6 +825,8 @@ class SentineloneConnector(BaseConnector):
             site_ids = self._get_site_id(action_result)
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        if site_ids == '-1':
+            return action_result.get_status()
 
         self.save_progress('Agent query: {}'.format(site_ids))
         summary = action_result.update_summary({})
@@ -955,6 +965,8 @@ class SentineloneConnector(BaseConnector):
         summary = action_result.update_summary({})
         summary['s1_threat_id'] = s1_threat_id
         mitigation_status = self._get_mitigation_status(s1_threat_id, action_result)
+        if mitigation_status == '-1':
+            return action_result.get_status()
         threat_id_found = self._validate_threat_id(s1_threat_id, action_result)
         if threat_id_found == "-1":
             return action_result.set_status(phantom.APP_ERROR, "Threat ID is invalid")
@@ -963,6 +975,8 @@ class SentineloneConnector(BaseConnector):
         try:
             report_id = self._get_report_id(s1_threat_id, action_result)
             action_result.add_data('{}/web/api/v2.1{}'.format(self._base_url, report_id))
+            if report_id == '-1':
+                return action_result.get_status()
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         return action_result.set_status(phantom.APP_SUCCESS, "Successfully exported mitigation report")
@@ -1025,6 +1039,8 @@ class SentineloneConnector(BaseConnector):
         # giving time to fetch file and generate download_url
         time.sleep(30)
         threat_file_download_endpoint = self._get_threat_file_download_url(s1_threat_id, action_result)
+        if threat_file_download_endpoint == '-1':
+            return action_result.get_status()
         threat_file_download_url = '{}/web/api/v2.1{}'.format(self._base_url, threat_file_download_endpoint)
         summary['threat_file_download_url'] = threat_file_download_url
         if phantom.is_fail(ret_val):
