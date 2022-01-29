@@ -1006,6 +1006,7 @@ class SentineloneConnector(BaseConnector):
                 action_result.add_data('{}/web/api/v2.1/threats/export?agentIds={}'.format(self._base_url, ret_val))
             else:
                 action_result.add_data('{}/web/api/v2.1/threats/export'.format(self._base_url))
+                return action_result.set_status(phantom.APP_SUCCESS, "Action executed successfully")
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         return action_result.set_status(phantom.APP_SUCCESS, "Successfully exported threats")
