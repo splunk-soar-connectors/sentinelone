@@ -9,6 +9,7 @@
     "product_name": "SentinelOne",
     "python_version": "3",
     "product_version_regex": ".*",
+    "fips_compliant": true,
     "publisher": "SentinelOne",
     "contributors": [
         {
@@ -16,7 +17,7 @@
         }
     ],
     "license": "Copyright (c) SentinelOne, 2018-2022",
-    "app_version": "2.2.1",
+    "app_version": "2.2.2",
     "utctime_updated": "2022-01-29T10:18:02.000000Z",
     "package_name": "phantom_sentinelone",
     "main_module": "sentinelone_connector.py",
