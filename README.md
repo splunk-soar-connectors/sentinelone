@@ -2,7 +2,7 @@
 # SentinelOne
 
 Publisher: SentinelOne  
-Connector Version: 2\.2\.5  
+Connector Version: 2\.2\.6  
 Product Vendor: SentinelOne  
 Product Name: SentinelOne  
 Product Version Supported (regex): "\.\*"  
