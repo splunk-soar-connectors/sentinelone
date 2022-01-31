@@ -1,21 +1,34 @@
 # File: sentinelone_connector.py
-# Copyright (c) SentinelOne, 2018-2021
+# Copyright (c) SentinelOne, 2018-2022
+
 #
-# Licensed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0.txt)
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under
+# the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied. See the License for the specific language governing permissions
+# and limitations under the License.
 
 from __future__ import print_function, unicode_literals
-import phantom.app as phantom
-from phantom.base_connector import BaseConnector
-from phantom.action_result import ActionResult
-from sentinelone_consts import *
-from sentinelone_utilities import KennyLoggins, logging
-import requests
+
 import json
+import sys
 import time
-from bs4 import BeautifulSoup
 from datetime import datetime
 from urllib.parse import unquote
+
+import phantom.app as phantom
+import requests
+from bs4 import BeautifulSoup
+from phantom.action_result import ActionResult
+from phantom.base_connector import BaseConnector
+
+from sentinelone_consts import *
+from sentinelone_utilities import KennyLoggins, logging
 
 
 class RetVal(tuple):
@@ -32,43 +45,38 @@ class SentineloneConnector(BaseConnector):
         self._base_url = None
         self.HEADER = {"Content-Type": "application/json"}
         kl = KennyLoggins()
-        self._log = kl.get_logger(app_name='phsentinelone', file_name='connector', log_level=logging.DEBUG, version='2.1.0')
+        self._log = kl.get_logger(app_name='phsentinelone', file_name='connector', log_level=logging.DEBUG, version='2.2.0')
         self._log.info('initialize_client=complete')
 
     def _get_error_message_from_exception(self, e):
-        """ This method is used to get appropriate error messages from the exception.
+        """
+        Get appropriate error message from the exception.
         :param e: Exception object
         :return: error message
         """
 
+        error_code = None
+        error_msg = ERR_MSG_UNAVAILABLE
+
         try:
-            if e.args:
+            if hasattr(e, "args"):
                 if len(e.args) > 1:
                     error_code = e.args[0]
                     error_msg = e.args[1]
                 elif len(e.args) == 1:
-                    error_code = ERR_CODE_MSG
                     error_msg = e.args[0]
-            else:
-                error_code = ERR_CODE_MSG
-                error_msg = ERR_MSG_UNAVAILABLE
         except:
-            error_code = ERR_CODE_MSG
-            error_msg = ERR_MSG_UNAVAILABLE
+            pass
 
-        try:
-            if error_code in ERR_CODE_MSG:
-                error_text = "Error Message: {0}".format(error_msg)
-            else:
-                error_text = "Error Code: {0}. Error Message: {1}".format(error_code, error_msg)
-        except:
-            self.debug_print(PARSE_ERR_MSG)
-            error_text = PARSE_ERR_MSG
+        if not error_code:
+            error_text = "Error Message: {}".format(error_msg)
+        else:
+            error_text = "Error Code: {}. Error Message: {}".format(error_code, error_msg)
 
         return error_text
 
     def _process_empty_response(self, response, action_result):
-        if response.status_code == 200:
+        if response.status_code == 200 or response.status_code == 204:
             return RetVal(phantom.APP_SUCCESS, {})
 
         return RetVal(
@@ -147,11 +155,9 @@ class SentineloneConnector(BaseConnector):
             r = request_func(
                 url,
                 verify=config.get('verify_server_cert', False),
+                timeout=120,
                 **kwargs
             )
-        except requests.exceptions.ConnectionError:
-            err_msg = 'Error Details: Connection Refused from the Server'
-            return RetVal(action_result.set_status(phantom.APP_ERROR, err_msg), resp_json)
         except Exception as e:
             err_msg = self._get_error_message_from_exception(e)
             return RetVal(
@@ -171,7 +177,8 @@ class SentineloneConnector(BaseConnector):
                     "apiToken": self.token
                 }
         }
-        ret_val, response = self._make_rest_call('/web/api/v2.1/users/login/by-api-token', action_result, params=None, headers=header, data=json.dumps(body), method='post')
+        ret_val, response = self._make_rest_call(
+            '/web/api/v2.1/users/login/by-api-token', action_result, params=None, headers=header, data=json.dumps(body), method='post')
         if phantom.is_fail(ret_val):
             self.save_progress("Test Connectivity Failed")
             return action_result.get_status()
@@ -185,39 +192,51 @@ class SentineloneConnector(BaseConnector):
         hash = param['hash']
         description = param['description']
         os_family = param['os_family']
-        summary = action_result.update_summary({})
-        summary['hash'] = hash
-        summary['description'] = description
-        header = self.HEADER
-        header["Authorization"] = "APIToken %s" % self.token
-        params = {"value": hash, "type": "black_hash"}
-        ret_val, response = self._make_rest_call('/web/api/v2.1/restrictions', action_result, headers=header, params=params)
-        if phantom.is_fail(ret_val):
-            return action_result.get_status()
-
         try:
-            if response.get('pagination', {}).get('totalItems') != 0:
-                return action_result.set_status(phantom.APP_ERROR, "Hash already exists")
-            else:
-                body = {
-                    "data": {
-                        "description": description,
-                        "osType": os_family,
-                        "type": "black_hash",
-                        "value": hash,
-                        "source": "phantom"
-                    },
-                    "filter": {
-                        "tenant": "true"
-                    }
-                }
-                ret_val, response = self._make_rest_call('/web/api/v2.1/restrictions', action_result, headers=header, method='post', data=json.dumps(body))
-                if phantom.is_fail(ret_val):
-                    return action_result.get_status()
+            site_ids = self._get_site_id(action_result)
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
-
-        return action_result.set_status(phantom.APP_SUCCESS, "Successfully Added Hash to Block List")
+        if site_ids == '-1':
+            return action_result.get_status()
+        if site_ids:
+            for site_id in site_ids:
+                self.save_progress('Agent query: {}'.format(site_id))
+                summary = action_result.update_summary({})
+                summary['hash'] = hash
+                summary['description'] = description
+                summary['site_id'] = site_id
+                header = self.HEADER
+                header["Authorization"] = "APIToken %s" % self.token
+                params = {"value": hash, "type": "black_hash"}
+                ret_val, response = self._make_rest_call('/web/api/v2.1/restrictions', action_result, headers=header, params=params)
+                if phantom.is_fail(ret_val):
+                    return action_result.get_status()
+                try:
+                    if response.get('pagination', {}).get('totalItems') != 0:
+                        return action_result.set_status(phantom.APP_ERROR, "Hash already exists")
+                    else:
+                        body = {
+                            "data": {
+                                "description": description,
+                                "osType": os_family,
+                                "type": "black_hash",
+                                "value": hash,
+                                "source": "phantom"
+                            },
+                            "filter": {
+                                "siteIds": [site_id],
+                                "tenant": "true"
+                            }
+                        }
+                        ret_val, response = self._make_rest_call(
+                            '/web/api/v2.1/restrictions', action_result, headers=header, method='post', data=json.dumps(body))
+                        if phantom.is_fail(ret_val):
+                            return action_result.get_status()
+                except Exception:
+                    return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        else:
+            action_result.set_status(phantom.APP_ERROR, "Site ID not found")
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully added hash to Block List")
 
     def _handle_unblock_hash(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
@@ -234,10 +253,12 @@ class SentineloneConnector(BaseConnector):
             return action_result.get_status()
 
         try:
-            if response['pagination']['totalItems'] == 0:
+            if response.get('pagination', {}).get('totalItems') == 0:
                 return action_result.set_status(phantom.APP_ERROR, "Hash not found")
-            elif response['pagination']['totalItems'] > 1:
-                return action_result.set_status(phantom.APP_ERROR, "Multiple IDs for {hash}: {total_items}".format(hash=hash, total_items=response['pagination']['totalItems']))
+            elif response.get('pagination', {}).get('totalItems') > 1:
+                return action_result.set_status(
+                    phantom.APP_ERROR, "Multiple IDs for {hash}: {total_items}".format(hash=hash,
+                    total_items=response['pagination']['totalItems']))
             else:
                 hash_id = response['data'][0]['id']
                 body = {
@@ -246,14 +267,15 @@ class SentineloneConnector(BaseConnector):
                         "type": "black_hash"
                     }
                 }
-                ret_val, response = self._make_rest_call('/web/api/v2.1/restrictions', action_result, headers=header, data=json.dumps(body), params=params, method='delete')
+                ret_val, response = self._make_rest_call(
+                    '/web/api/v2.1/restrictions', action_result, headers=header, data=json.dumps(body), params=params, method='delete')
                 if phantom.is_fail(ret_val):
                     self.save_progress("Deleting Hash Failed.  Error: {0}".format(action_result.get_message()))
                     return action_result.get_status()
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
 
-        return action_result.set_status(phantom.APP_SUCCESS, "Successfully Deleted hash")
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully deleted hash")
 
     def _handle_quarantine_device(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
@@ -264,7 +286,9 @@ class SentineloneConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         self.save_progress('Agent query: {}'.format(ret_val))
-        if ret_val == '0':
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
             return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
         elif ret_val == '99':
             return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
@@ -281,11 +305,14 @@ class SentineloneConnector(BaseConnector):
                     "ids": [ret_val],
                 }
             }
-            ret_val, response = self._make_rest_call('/web/api/v2.1/agents/actions/disconnect', action_result, params=None, headers=header, data=json.dumps(body), method='post')
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/agents/actions/disconnect', action_result, params=None, headers=header, data=json.dumps(body), method='post')
             if phantom.is_fail(ret_val):
                 self.save_progress("Quarantine Device Failed.  Error: {0}".format(action_result.get_message()))
                 return action_result.get_status()
-        return action_result.set_status(phantom.APP_SUCCESS, "Successfully Quarantined device")
+            if response.get('data', {}).get('affected') == 0:
+                return action_result.set_status(phantom.APP_ERROR, "Could not quarantine device")
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully quarantined device")
 
     def _handle_unquarantine_device(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
@@ -296,7 +323,9 @@ class SentineloneConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         self.save_progress('Agent query: {}'.format(ret_val))
-        if ret_val == '0':
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
             return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
         elif ret_val == '99':
             return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
@@ -313,11 +342,14 @@ class SentineloneConnector(BaseConnector):
                     "ids": [ret_val],
                 }
             }
-            ret_val, response = self._make_rest_call('/web/api/v2.1/agents/actions/connect', action_result, params=None, headers=header, data=json.dumps(body), method='post')
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/agents/actions/connect', action_result, params=None, headers=header, data=json.dumps(body), method='post')
             if phantom.is_fail(ret_val):
                 self.save_progress("Unquarantine Device Failed.  Error: {0}".format(action_result.get_message()))
                 return action_result.get_status()
-        return action_result.set_status(phantom.APP_SUCCESS, "Successfully Unquarantined device")
+            if response.get('data', {}).get('affected') == 0:
+                return action_result.set_status(phantom.APP_ERROR, "Could not unquarantine device")
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully unquarantined device")
 
     def _handle_mitigate_threat(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
@@ -335,7 +367,8 @@ class SentineloneConnector(BaseConnector):
                 "ids": [s1_threat_id],
             }
         }
-        ret_val, response = self._make_rest_call('/web/api/v2.1/threats/mitigate/{}'.format(action), action_result, headers=header, data=json.dumps(body), method='post')
+        ret_val, response = self._make_rest_call(
+            '/web/api/v2.1/threats/mitigate/{}'.format(action), action_result, headers=header, data=json.dumps(body), method='post')
         if phantom.is_fail(ret_val):
             self.save_progress("Failed to mitigate threat. Error: {0}".format(action_result.get_message()))
             return action_result.get_status()
@@ -348,7 +381,7 @@ class SentineloneConnector(BaseConnector):
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         return action_result.set_status(phantom.APP_SUCCESS, "Successfully mitigated threat")
 
-    def _handle_scan_endpoint(self, param):
+    def _handle_abort_scan(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
         action_result = self.add_action_result(ActionResult(dict(param)))
         ip_hostname = param['ip_hostname']
@@ -357,7 +390,9 @@ class SentineloneConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         self.save_progress('Agent query: {}'.format(ret_val))
-        if ret_val == '0':
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
             return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
         elif ret_val == '99':
             return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
@@ -373,12 +408,249 @@ class SentineloneConnector(BaseConnector):
                     "ids": ret_val
                 }
             }
-            ret_val, response = self._make_rest_call('/web/api/v2.1/agents/actions/initiate-scan', action_result, headers=header, data=json.dumps(body), method='post')
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/agents/actions/abort-scan', action_result, headers=header, data=json.dumps(body), method='post')
+            self.save_progress("Ret_val: {0}".format(ret_val))
+            if phantom.is_fail(ret_val):
+                self.save_progress("Failed to abort scan. Error: {0}".format(action_result.get_message()))
+                return action_result.get_status()
+            if response.get('data', {}).get('affected') == 0:
+                return action_result.set_status(phantom.APP_ERROR, "Could not abort scanning")
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _handle_scan_endpoint(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        ip_hostname = param['ip_hostname']
+        try:
+            ret_val = self._get_agent_id(ip_hostname, action_result)
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        self.save_progress('Agent query: {}'.format(ret_val))
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
+            return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
+        elif ret_val == '99':
+            return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
+        else:
+            summary = action_result.update_summary({})
+            summary['ip_hostname'] = ip_hostname
+            summary['agent_id'] = ret_val
+            header = self.HEADER
+            header["Authorization"] = "APIToken %s" % self.token
+            body = {
+                "data": {},
+                "filter": {
+                    "ids": ret_val
+                }
+            }
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/agents/actions/initiate-scan', action_result, headers=header, data=json.dumps(body), method='post')
             self.save_progress("Ret_val: {0}".format(ret_val))
             if phantom.is_fail(ret_val):
                 self.save_progress("Failed to scan endpoint. Error: {0}".format(action_result.get_message()))
                 return action_result.get_status()
+            if response.get('data', {}).get('affected') == 0:
+                return action_result.set_status(phantom.APP_ERROR, "Could not start scanning")
         return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _handle_shutdown_endpoint(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        ip_hostname = param['ip_hostname']
+        try:
+            ret_val = self._get_agent_id(ip_hostname, action_result)
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        self.save_progress('Agent query: {}'.format(ret_val))
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
+            return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
+        elif ret_val == '99':
+            return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
+        else:
+            summary = action_result.update_summary({})
+            summary['ip_hostname'] = ip_hostname
+            summary['agent_id'] = ret_val
+            header = self.HEADER
+            header["Authorization"] = "APIToken %s" % self.token
+            body = {
+                "data": {},
+                "filter": {
+                    "ids": ret_val
+                }
+            }
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/agents/actions/shutdown', action_result, headers=header, data=json.dumps(body), method='post')
+            self.save_progress("Ret_val: {0}".format(ret_val))
+            if phantom.is_fail(ret_val):
+                self.save_progress("Failed to shutdown endpoint. Error: {0}".format(action_result.get_message()))
+                return action_result.get_status()
+            if response.get('data', {}).get('affected') == 0:
+                return action_result.set_status(phantom.APP_ERROR, "Could not shutdown endpoint")
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _handle_broadcast_message(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        ip_hostname = param['ip_hostname']
+        message = param['message']
+
+        try:
+            ret_val = self._get_agent_id(ip_hostname, action_result)
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        self.save_progress('Agent query: {}'.format(ret_val))
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
+            return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
+        elif ret_val == '99':
+            return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
+        else:
+            summary = action_result.update_summary({})
+            summary['ip_hostname'] = ip_hostname
+            summary['agent_id'] = ret_val
+            summary['message'] = message
+            header = self.HEADER
+            header["Authorization"] = "APIToken %s" % self.token
+            body = {
+                "data": {
+                    "message": message
+                },
+                "filter": {
+                    "ids": ret_val
+                }
+            }
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/agents/actions/broadcast', action_result, headers=header, data=json.dumps(body), method='post')
+            self.save_progress("Ret_val: {0}".format(ret_val))
+            if phantom.is_fail(ret_val):
+                self.save_progress("Failed to broadcast message. Error: {0}".format(action_result.get_message()))
+                return action_result.get_status()
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _handle_fetch_files(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        ip_hostname = param['ip_hostname']
+        file_path = param['file_path']
+        password = param["password"]
+        try:
+            ret_val = self._get_agent_id(ip_hostname, action_result)
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        self.save_progress('Agent query: {}'.format(ret_val))
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
+            return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
+        elif ret_val == '99':
+            return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
+        else:
+            summary = action_result.update_summary({})
+            summary['ip_hostname'] = ip_hostname
+            summary['file_path'] = file_path
+            summary['password'] = password
+            summary['agent_id'] = ret_val
+            header = self.HEADER
+            header["Authorization"] = "APIToken %s" % self.token
+            body = {
+                "data": {
+                    "files": [file_path],
+                    "password": password
+                }
+            }
+            ret_val, response = self._make_rest_call('/web/api/v2.1/agents/{}/actions/fetch-files'.format(ret_val),
+                action_result, headers=header, data=json.dumps(body), method='post')
+            self.save_progress("Ret_val: {0}".format(ret_val))
+            # giving time to fetch file and generate download_url
+            time.sleep(30)
+            download_id = self._get_download_id(action_result)
+            if download_id == '-1':
+                return action_result.get_status()
+            download_url = '{}/web/api/v2.1{}'.format(self._base_url, download_id)
+            summary['download_url'] = download_url
+            if phantom.is_fail(ret_val):
+                self.save_progress("Failed to fetch files. Error: {0}".format(action_result.get_message()))
+                return action_result.get_status()
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _handle_fetch_firewall_rules(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        ip_hostname = param['ip_hostname']
+        try:
+            ret_val = self._get_agent_id(ip_hostname, action_result)
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        self.save_progress('Agent query: {}'.format(ret_val))
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
+            return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
+        elif ret_val == '99':
+            return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
+        else:
+            summary = action_result.update_summary({})
+            summary['ip_hostname'] = ip_hostname
+            summary['agent_id'] = ret_val
+            header = self.HEADER
+            header["Authorization"] = "APIToken %s" % self.token
+            body = {
+                "data": {
+                    "format": "native",
+                    "state": "initial"
+                },
+                "filter": {
+                    "ids": ret_val
+                }
+            }
+            ret_val, response = self._make_rest_call('/web/api/v2.1/agents/actions/fetch-firewall-rules', action_result,
+                params=None, headers=header, data=json.dumps(body), method='post')
+            if phantom.is_fail(ret_val):
+                self.save_progress("Fetch firewall rules Failed.  Error: {0}".format(action_result.get_message()))
+                return action_result.get_status()
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully fetched firewall rules")
+
+    def _handle_fetch_firewall_logs(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        ip_hostname = param['ip_hostname']
+        try:
+            ret_val = self._get_agent_id(ip_hostname, action_result)
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        self.save_progress('Agent query: {}'.format(ret_val))
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
+            return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
+        elif ret_val == '99':
+            return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
+        else:
+            summary = action_result.update_summary({})
+            summary['ip_hostname'] = ip_hostname
+            summary['agent_id'] = ret_val
+            header = self.HEADER
+            header["Authorization"] = "APIToken %s" % self.token
+            body = {
+                "data": {
+                    "reportLog": "true",
+                    "reportMgmt": "true"
+                },
+                "filter": {
+                    "ids": ret_val
+                }
+            }
+            ret_val, response = self._make_rest_call('/web/api/v2.1/agents/actions/firewall-logging', action_result,
+                params=None, headers=header, data=json.dumps(body), method='post')
+            if phantom.is_fail(ret_val):
+                self.save_progress("Fetch firewall logs Failed.  Error: {0}".format(action_result.get_message()))
+                return action_result.get_status()
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully fetched firewall logs")
 
     def _handle_get_endpoint_info(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
@@ -389,7 +661,9 @@ class SentineloneConnector(BaseConnector):
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         self.save_progress('Agent query: {}'.format(ret_val))
-        if ret_val == '0':
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
             return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
         elif ret_val == '99':
             return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
@@ -401,6 +675,7 @@ class SentineloneConnector(BaseConnector):
             header["Authorization"] = "APIToken %s" % self.token
             params = {"ids": [ret_val]}
             ret_val, response = self._make_rest_call('/web/api/v2.1/agents', action_result, headers=header, params=params)
+            action_result.add_data(response)
             self.save_progress("Ret_val: {0}".format(ret_val))
             if phantom.is_fail(ret_val):
                 self.save_progress("Failed to get the endpoint information.  Error: {0}".format(action_result.get_message()))
@@ -417,28 +692,599 @@ class SentineloneConnector(BaseConnector):
         header["Authorization"] = "APIToken %s" % self.token
         params = {"ids": [s1_threat_id]}
         ret_val, response = self._make_rest_call('/web/api/v2.1/threats', action_result, headers=header, params=params)
+        action_result.add_data(response)
         self.save_progress("Ret_val: {0}".format(ret_val))
         if phantom.is_fail(ret_val):
+            return action_result.get_status()
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _handle_get_applications(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        ip_hostname = param.get('ip_hostname')
+        params = None
+        if ip_hostname:
+            try:
+                ret_val = self._get_computer_name(ip_hostname, action_result)
+            except Exception:
+                return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+            self.save_progress('Agent query: {}'.format(ret_val))
+
+            if ret_val == '-1':
+                return action_result.get_status()
+            elif ret_val == '0':
+                return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
+            elif ret_val == '99':
+                return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
+            else:
+                summary = action_result.update_summary({})
+                summary['ip_hostname'] = ip_hostname
+                summary['computer_name'] = ret_val
+                params = {"agentComputerName__contains": ret_val}
+        header = self.HEADER
+        header["Authorization"] = "APIToken %s" % self.token
+        ret_val, response = self._make_rest_call('/web/api/v2.1/installed-applications', action_result, headers=header, params=params)
+        action_result.add_data(response)
+        self.save_progress("Ret_val: {0}".format(ret_val))
+        if phantom.is_fail(ret_val):
+            self.save_progress("Failed to get applications.  Error: {0}".format(action_result.get_message()))
+            return action_result.get_status()
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _handle_get_cves(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        header = self.HEADER
+        header["Authorization"] = "APIToken %s" % self.token
+        ret_val, response = self._make_rest_call('/web/api/v2.1/installed-applications/cves', action_result, headers=header)
+        action_result.add_data(response)
+        self.save_progress("Ret_val: {0}".format(ret_val))
+        if phantom.is_fail(ret_val):
+            self.save_progress("Failed to get Cves.  Error: {0}".format(action_result.get_message()))
+            return action_result.get_status()
+        if response.get('pagination', {}).get('totalItems') == 0:
+            return action_result.set_status(phantom.APP_SUCCESS, "No CVEs are found")
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _handle_get_device_control_events(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        ip_hostname = param['ip_hostname']
+        try:
+            ret_val = self._get_agent_id(ip_hostname, action_result)
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        self.save_progress('Agent query: {}'.format(ret_val))
+        if ret_val == '-1':
+            return action_result.get_status()
+        elif ret_val == '0':
+            return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
+        elif ret_val == '99':
+            return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
+        else:
+            summary = action_result.update_summary({})
+            summary['ip_hostname'] = ip_hostname
+            summary['agent_id'] = ret_val
+            header = self.HEADER
+            header["Authorization"] = "APIToken %s" % self.token
+            params = {"agentIds": ret_val}
+            ret_val, response = self._make_rest_call('/web/api/v2.1/device-control/events', action_result, headers=header, params=params)
+            action_result.add_data(response)
+            self.save_progress("Ret_val: {0}".format(ret_val))
+            if phantom.is_fail(ret_val):
+                self.save_progress("Failed to get device control events.  Error: {0}".format(action_result.get_message()))
+                return action_result.get_status()
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _handle_get_firewall_rules(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        try:
+            site_ids = self._get_site_id(action_result)
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        if site_ids == '-1':
+            return action_result.get_status()
+        if site_ids:
+            for site_id in site_ids:
+                self.save_progress('Agent query: {}'.format(site_id))
+                summary = action_result.update_summary({})
+                summary['site_id'] = site_id
+                header = self.HEADER
+                header["Authorization"] = "APIToken %s" % self.token
+                params = {"siteIds": site_id}
+                ret_val, response = self._make_rest_call('/web/api/v2.1/firewall-control', action_result, headers=header, params=params)
+                action_result.add_data(response)
+                self.save_progress("Ret_val: {0}".format(ret_val))
+                if phantom.is_fail(ret_val):
+                    self.save_progress("Failed to get firewall rules.  Error: {0}".format(action_result.get_message()))
+                    return action_result.get_status()
+                next = True
+                while next:
+                    if response.get("pagination", {}).get("nextCursor") is not None:
+                        params["cursor"] = response["pagination"]["nextCursor"]
+                        ret_val, response = self._make_rest_call('/web/api/v2.1/firewall-control', action_result, headers=header, params=params)
+                        action_result.add_data(response)
+                    else:
+                        next = False
+                        break
+                if response.get('pagination', {}).get('totalItems') == 0:
+                    return action_result.set_status(phantom.APP_ERROR, "Firewall rules not found")
+        else:
+            action_result.set_status(phantom.APP_ERROR, "Site ID not found")
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _handle_create_firewall_rule(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        rule_name = param['rule_name']
+        tag_ids = param.get('tag_ids')
+        description = param["description"]
+        type = param["type"]
+        value = param["value"]
+        try:
+            site_ids = self._get_site_id(action_result)
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        if site_ids == '-1':
+            return action_result.get_status()
+
+        self.save_progress('Agent query: {}'.format(site_ids))
+        summary = action_result.update_summary({})
+        summary['rule_name'] = rule_name
+        summary["description"] = description
+        summary["type"] = type
+        summary["value"] = value
+        summary['site_ids'] = site_ids
+        summary['tag_ids'] = tag_ids
+        header = self.HEADER
+        header["Authorization"] = "APIToken %s" % self.token
+        try:
+            body = {
+                "data": {
+                            "name": rule_name,
+                            "status": "Enabled",
+                            "tagIds": [],
+                            "action": "Block",
+                            "osTypes": [
+                                        "windows_legacy",
+                                        "macos",
+                                        "linux",
+                                        "windows"
+                                       ],
+                            "description": description,
+                            "remoteHosts": [
+                                {
+                                    "type": type,
+                                    "values": [value]
+                                }
+                            ]
+                        },
+                "filter": {
+                            "siteIds": site_ids,
+                            "tenant": "true"
+                          }
+                    }
+            if tag_ids:
+                if tag_ids is not None or len(tag_ids) > 0:
+                    tag_ids = [value.strip() for value in tag_ids.split(",") if value.strip()]
+                    if not tag_ids:
+                        return action_result.set_status(phantom.APP_ERROR, SENTINELONE_ERR_INVALID_FIELD.format(key="tag_ids"))
+                    body['data']['tagIds'] = tag_ids
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/firewall-control', action_result, headers=header, method='post', data=json.dumps(body))
+            action_result.add_data(response)
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully created firewall rule")
+
+    def _handle_hash_reputation(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        hash = param['hash']
+        summary = action_result.update_summary({})
+        summary['hash'] = hash
+        header = self.HEADER
+        header["Authorization"] = "APIToken %s" % self.token
+        ret_val, response = self._make_rest_call('/web/api/v2.1/hashes/{}/reputation'.format(hash), action_result, headers=header)
+        action_result.add_data(response)
+        self.save_progress("Ret_val: {0}".format(ret_val))
+        if phantom.is_fail(ret_val):
+            self.save_progress("Failed to get hash reputation.  Error: {0}".format(action_result.get_message()))
+            return action_result.get_status()
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _handle_get_threat_notes(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        s1_threat_id = param['s1_threat_id']
+        summary = action_result.update_summary({})
+        summary['s1_threat_id'] = s1_threat_id
+        header = self.HEADER
+        header["Authorization"] = "APIToken %s" % self.token
+        ret_val, response = self._make_rest_call('/web/api/v2.1/threats/{}/notes'.format(s1_threat_id), action_result, headers=header)
+        self.save_progress("Ret_val: {0}".format(ret_val))
+        if phantom.is_fail(ret_val):
+            self.save_progress("Failed to get threat notes.  Error: {0}".format(action_result.get_message()))
             return action_result.get_status()
         action_result.add_data(response)
         return action_result.set_status(phantom.APP_SUCCESS)
 
+    def _handle_add_threat_note(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        s1_threat_ids = param['s1_threat_ids']
+        note = param['note']
+        summary = action_result.update_summary({})
+        summary['s1_threat_ids'] = s1_threat_ids
+        summary['note'] = note
+        header = self.HEADER
+        header["Authorization"] = "APIToken %s" % self.token
+        s1_threat_ids = [value.strip() for value in s1_threat_ids.split(",") if value.strip()]
+        if not s1_threat_ids:
+            return action_result.set_status(phantom.APP_ERROR, SENTINELONE_ERR_INVALID_FIELD.format(key="s1_threat_ids"))
+        try:
+            body = {
+                "data": {
+                            "text": note
+                        },
+                "filter": {
+                            "ids": s1_threat_ids,
+                            "tenant": "true"
+                          }
+                    }
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/threats/notes', action_result, headers=header, method='post', data=json.dumps(body))
+            action_result.add_data(response)
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully added note to multiple threats")
+
+    def _handle_export_threat_timeline(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        s1_threat_id = param['s1_threat_id']
+        summary = action_result.update_summary({})
+        summary['s1_threat_id'] = s1_threat_id
+        threat_id_found = self._validate_threat_id(s1_threat_id, action_result)
+        if threat_id_found == "-1":
+            return action_result.set_status(phantom.APP_ERROR, "Threat ID is invalid")
+        try:
+            action_result.add_data('{}/web/api/v2.1/export/threats/{}/timeline'.format(self._base_url, s1_threat_id))
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully exported threat timeline")
+
+    def _handle_export_mitigation_report(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        s1_threat_id = param['s1_threat_id']
+        summary = action_result.update_summary({})
+        summary['s1_threat_id'] = s1_threat_id
+        mitigation_status = self._get_mitigation_status(s1_threat_id, action_result)
+        if mitigation_status == '-1':
+            return action_result.get_status()
+        threat_id_found = self._validate_threat_id(s1_threat_id, action_result)
+        if threat_id_found == "-1":
+            return action_result.set_status(phantom.APP_ERROR, "Threat ID is invalid")
+        if mitigation_status == "not_mitigated":
+            return action_result.set_status(phantom.APP_ERROR, "Threat is not mitigated")
+        try:
+            report_id = self._get_report_id(s1_threat_id, action_result)
+            action_result.add_data('{}/web/api/v2.1{}'.format(self._base_url, report_id))
+            if report_id == '-1':
+                return action_result.get_status()
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully exported mitigation report")
+
+    def _handle_export_threats(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        ip_hostname = param.get('ip_hostname')
+        try:
+            if ip_hostname:
+                try:
+                    ret_val = self._get_agent_id(ip_hostname, action_result)
+                except Exception:
+                    return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+                self.save_progress('Agent query: {}'.format(ret_val))
+
+                if ret_val == '-1':
+                    return action_result.get_status()
+                elif ret_val == '0':
+                    return action_result.set_status(phantom.APP_ERROR, "Endpoint not found")
+                elif ret_val == '99':
+                    return action_result.set_status(phantom.APP_ERROR, "More than one endpoint found")
+                else:
+                    summary = action_result.update_summary({})
+                    summary['ip_hostname'] = ip_hostname
+                    summary['agent_id'] = ret_val
+                action_result.add_data('{}/web/api/v2.1/threats/export?agentIds={}'.format(self._base_url, ret_val))
+            else:
+                action_result.add_data('{}/web/api/v2.1/threats/export'.format(self._base_url))
+                return action_result.set_status(phantom.APP_SUCCESS, "Action executed successfully")
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully exported threats")
+
+    def _handle_fetch_threat_file(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        password = param['password']
+        s1_threat_id = param['s1_threat_id']
+        summary = action_result.update_summary({})
+        summary['s1_threat_id'] = s1_threat_id
+        header = self.HEADER
+        header["Authorization"] = "APIToken %s" % self.token
+        try:
+            body = {
+                "data": {
+                            "password": password
+                        },
+                "filter": {
+                            "ids": s1_threat_id,
+                            "tenant": "true"
+                        }
+                    }
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/threats/fetch-file', action_result, headers=header, method='post', data=json.dumps(body))
+            action_result.add_data(response)
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        # giving time to fetch file and generate download_url
+        time.sleep(30)
+        threat_file_download_endpoint = self._get_threat_file_download_url(s1_threat_id, action_result)
+        if threat_file_download_endpoint == '-1':
+            return action_result.get_status()
+        threat_file_download_url = '{}/web/api/v2.1{}'.format(self._base_url, threat_file_download_endpoint)
+        summary['threat_file_download_url'] = threat_file_download_url
+        if phantom.is_fail(ret_val):
+            self.save_progress("Failed to fetch threat file. Error: {0}".format(action_result.get_message()))
+            return action_result.get_status()
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully fetched threat file.")
+
+    def _handle_update_threat_analyst_verdict(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        analyst_verdict = param['analyst_verdict']
+        s1_threat_id = param['s1_threat_id']
+        summary = action_result.update_summary({})
+        summary['s1_threat_id'] = s1_threat_id
+        header = self.HEADER
+        header["Authorization"] = "APIToken %s" % self.token
+        try:
+            body = {
+                "data": {
+                            "analystVerdict": analyst_verdict
+                        },
+                "filter": {
+                            "ids": s1_threat_id,
+                            "tenant": "true"
+                        }
+                    }
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/threats/analyst-verdict', action_result, headers=header, method='post', data=json.dumps(body))
+            action_result.add_data(response)
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
+            if response.get('data', {}).get('affected') == 0:
+                return action_result.set_status(phantom.APP_ERROR, "Given analyst verdict is already present")
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully updated threat analyst verdict")
+
+    def _handle_get_threat_timeline(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        s1_threat_id = param['s1_threat_id']
+        summary = action_result.update_summary({})
+        summary['s1_threat_id'] = s1_threat_id
+        header = self.HEADER
+        header["Authorization"] = "APIToken %s" % self.token
+        threat_id_found = self._validate_threat_id(s1_threat_id, action_result)
+        if threat_id_found == "-1":
+            return action_result.set_status(phantom.APP_ERROR, "Threat ID is invalid")
+        else:
+            ret_val, response = self._make_rest_call('/web/api/v2.1/threats/{}/timeline'.format(s1_threat_id), action_result, headers=header)
+            action_result.add_data(response)
+            self.save_progress("Ret_val: {0}".format(ret_val))
+            next = True
+            while next:
+                if response.get("pagination", {}).get("nextCursor") is not None:
+                    params = {"cursor": response["pagination"]["nextCursor"]}
+                    ret_val, response = self._make_rest_call(
+                        '/web/api/v2.1/threats/{}/timeline'.format(s1_threat_id), action_result, headers=header, params=params)
+                    action_result.add_data(response)
+                else:
+                    next = False
+                    break
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
+            return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _handle_update_threat_incident(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        analyst_verdict = param['analyst_verdict']
+        incident_status = param['incident_status']
+        s1_threat_id = param['s1_threat_id']
+        summary = action_result.update_summary({})
+        summary['s1_threat_id'] = s1_threat_id
+        header = self.HEADER
+        header["Authorization"] = "APIToken %s" % self.token
+        try:
+            body = {
+                "data": {
+                            "analystVerdict": analyst_verdict,
+                            "incidentStatus": incident_status
+                        },
+                "filter": {
+                            "ids": s1_threat_id,
+                            "tenant": "true"
+                        }
+                    }
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/threats/incident', action_result, headers=header, method='post', data=json.dumps(body))
+            action_result.add_data(response)
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
+            if response.get('data', {}).get('affected') == 0:
+                return action_result.set_status(phantom.APP_ERROR, "Given threat incident status is already present")
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully updated threat incident status")
+
+    def _handle_download_from_cloud(self, param):
+        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        action_result = self.add_action_result(ActionResult(dict(param)))
+        s1_threat_id = param['s1_threat_id']
+        summary = action_result.update_summary({})
+        summary['s1_threat_id'] = s1_threat_id
+        header = self.HEADER
+        header["Authorization"] = "APIToken %s" % self.token
+        try:
+            ret_val, response = self._make_rest_call(
+                '/web/api/v2.1/threats/{}/download-from-cloud'.format(s1_threat_id), action_result, headers=header)
+            action_result.add_data(response)
+            if phantom.is_fail(ret_val):
+                return action_result.get_status()
+        except Exception:
+            return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
+        return action_result.set_status(phantom.APP_SUCCESS, "Successfully downloaded threat file from cloud")
+
+    def _get_threat_file_download_url(self, search_text, action_result):
+        header = self.HEADER
+        header["Authorization"] = "APIToken %s" % self.token
+        ret_val, response = self._make_rest_call('/web/api/v2.1/threats/{}/timeline?skip=0&limit=30&sortOrder=desc'.format(search_text),
+            action_result, headers=header, method='get')
+        if phantom.is_fail(ret_val):
+            return str(-1)
+        try:
+            download_url_found = len(response['data'])
+            self.save_progress("download URL: {}".format(str(download_url_found)))
+            list = []
+            for i in range(30):
+                if response['data'][i]['data'].get('downloadUrl') is not None:
+                    list.append(response['data'][i]['data'].get('downloadUrl'))
+            for j in list:
+                if j[:8] == "/agents/":
+                    return j
+        except KeyError:
+            return action_result.set_status(phantom.APP_ERROR, "Error fetching download URL")
+
+    def _validate_threat_id(self, search_text, action_result):
+        header = self.HEADER
+        header["Authorization"] = "APIToken %s" % self.token
+        params = {"ids": search_text}
+        ret_val, response = self._make_rest_call('/web/api/v2.1/threats', action_result, headers=header, params=params, method='get')
+        if phantom.is_fail(ret_val):
+            return str(-1)
+        try:
+            threat_id_found = len(response['data'])
+            self.save_progress("Status found: {}".format(str(threat_id_found)))
+            return response["data"][0]["id"]
+        except KeyError:
+            return action_result.set_status(phantom.APP_ERROR, "Error fetching threat ID")
+
+    def _get_mitigation_status(self, search_text, action_result):
+        header = self.HEADER
+        header["Authorization"] = "APIToken %s" % self.token
+        params = {"ids": search_text}
+        ret_val, response = self._make_rest_call('/web/api/v2.1/threats', action_result, headers=header, params=params, method='get')
+        if phantom.is_fail(ret_val):
+            return str(-1)
+        try:
+            mitigation_status_found = len(response['data'])
+            self.save_progress("Status found: {}".format(str(mitigation_status_found)))
+            return response["data"][0]["threatInfo"]["mitigationStatus"]
+        except KeyError:
+            return action_result.set_status(phantom.APP_ERROR, "Error fetching mitigation status")
+
+    def _get_report_id(self, search_text, action_result):
+        header = self.HEADER
+        header["Authorization"] = "APIToken %s" % self.token
+        report_id, response = self._make_rest_call(
+            '/web/api/v2.1/private/threats/{}/analysis'.format(search_text), action_result, headers=header, method='get')
+        if phantom.is_fail(report_id):
+            return str(-1)
+        try:
+            report_id_found = len(response['data'])
+            self.save_progress("Threat found: {}".format(str(report_id_found)))
+            return response["data"]["mitigationStatus"][0]["latestReport"]
+        except KeyError:
+            return action_result.set_status(phantom.APP_ERROR, "Error fetching report id")
+
     def _get_agent_id(self, search_text, action_result):
         header = self.HEADER
         header["Authorization"] = "APIToken %s" % self.token
-        params = {"computerName": search_text}
+        params = {"query": search_text}
         ret_val, response = self._make_rest_call('/web/api/v2.1/agents', action_result, headers=header, params=params, method='get')
         if phantom.is_fail(ret_val):
             return str(-1)
         endpoints_found = len(response['data'])
         self.save_progress("Endpoints found: {}".format(str(endpoints_found)))
-        action_result.add_data(response)
         if endpoints_found == 0:
             return '0'
         elif endpoints_found > 1:
             return '99'
         else:
             return response['data'][0]['id']
+
+    def _get_computer_name(self, search_text, action_result):
+        header = self.HEADER
+        header["Authorization"] = "APIToken %s" % self.token
+        params = {"query": search_text}
+        ret_val, response = self._make_rest_call('/web/api/v2.1/agents', action_result, headers=header, params=params, method='get')
+        if phantom.is_fail(ret_val):
+            return str(-1)
+        endpoints_found = len(response['data'])
+        self.save_progress("Endpoints found: {}".format(str(endpoints_found)))
+        if endpoints_found == 0:
+            return '0'
+        elif endpoints_found > 1:
+            return '99'
+        else:
+            return response['data'][0]['computerName']
+
+    def _get_site_id(self, action_result):
+        header = self.HEADER
+        header["Authorization"] = "APIToken %s" % self.token
+        site_id, response = self._make_rest_call('/web/api/v2.1/sites', action_result, headers=header, method='get')
+        if phantom.is_fail(site_id):
+            return str(-1)
+        try:
+            sites_found = response['data']['sites']
+            site_ids = []
+            for site in sites_found:
+                if site and site.get('id'):
+                    site_ids.append(site.get('id'))
+            return site_ids
+        except KeyError:
+            return action_result.set_status(phantom.APP_ERROR, "Error fetching sites")
+
+    def _get_download_id(self, action_result):
+        header = self.HEADER
+        header["Authorization"] = "APIToken %s" % self.token
+        download_id, response = self._make_rest_call('/web/api/v2.1/activities?limit=100&sortBy=createdAt&sortOrder=desc&skip=0', action_result,
+            headers=header, method='get')
+        if phantom.is_fail(download_id):
+            return str(-1)
+        try:
+            download_id_found = len(response['data'])
+            self.save_progress("Endpoints found: {}".format(str(download_id_found)))
+            action_result.add_data(response)
+            for i in range(100):
+                if response['data'][i]['agentId'] != " " and response['data'][i]['data']['downloadUrl'] != " ":
+                    return response['data'][i]['data']['downloadUrl']
+        except KeyError:
+            return action_result.set_status(phantom.APP_ERROR, "Error fetching download ids")
 
     def _handle_on_poll(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
@@ -450,7 +1296,8 @@ class SentineloneConnector(BaseConnector):
         else:
             start_time = self._state.get('last_ingestion_time', end_time - SENTINELONE_24_HOUR_GAP)
         self._log.info(('action=on_poll start_time={} end_time={} container_count={}').format(start_time, end_time, container_count))
-        response_status, threats_list = self._get_alerts(action_result=action_result, start_time=start_time, end_time=end_time, max_limit=container_count)
+        response_status, threats_list = self._get_alerts(
+            action_result=action_result, start_time=start_time, end_time=end_time, max_limit=container_count)
         if phantom.is_fail(response_status):
             return action_result.get_status()
         if threats_list:
@@ -564,34 +1411,59 @@ class SentineloneConnector(BaseConnector):
         action_id = self.get_action_identifier()
         self.debug_print('action_id', self.get_action_identifier())
         self._log.info(('action_id={}').format(self.get_action_identifier()))
-        if action_id == 'test_connectivity':
-            ret_val = self._handle_test_connectivity(param)
-        elif action_id == 'on_poll':
-            ret_val = self._handle_on_poll(param)
-        elif action_id == 'block_hash':
-            ret_val = self._handle_block_hash(param)
-        elif action_id == 'unblock_hash':
-            ret_val = self._handle_unblock_hash(param)
-        elif action_id == 'quarantine_device':
-            ret_val = self._handle_quarantine_device(param)
-        elif action_id == 'unquarantine_device':
-            ret_val = self._handle_unquarantine_device(param)
-        elif action_id == 'mitigate_threat':
-            ret_val = self._handle_mitigate_threat(param)
-        elif action_id == 'scan_endpoint':
-            ret_val = self._handle_scan_endpoint(param)
-        elif action_id == 'get_endpoint_info':
-            ret_val = self._handle_get_endpoint_info(param)
-        elif action_id == 'get_threat_info':
-            ret_val = self._handle_get_threat_info(param)
+        function_map = {
+            'test_connectivity': self._handle_test_connectivity,
+            'on_poll': self._handle_on_poll,
+            'block_hash': self._handle_block_hash,
+            'unblock_hash': self._handle_unblock_hash,
+            'quarantine_device': self._handle_quarantine_device,
+            'unquarantine_device': self._handle_unquarantine_device,
+            'mitigate_threat': self._handle_mitigate_threat,
+            'abort_scan': self._handle_abort_scan,
+            'shutdown_endpoint': self._handle_shutdown_endpoint,
+            'broadcast_message': self._handle_broadcast_message,
+            'fetch_files': self._handle_fetch_files,
+            'fetch_firewall_rules': self._handle_fetch_firewall_rules,
+            'fetch_firewall_logs': self._handle_fetch_firewall_logs,
+            'scan_endpoint': self._handle_scan_endpoint,
+            'get_endpoint_info': self._handle_get_endpoint_info,
+            'get_threat_info': self._handle_get_threat_info,
+            'get_applications': self._handle_get_applications,
+            'get_cves': self._handle_get_cves,
+            'get_device_control_events': self._handle_get_device_control_events,
+            'get_firewall_rules': self._handle_get_firewall_rules,
+            'create_firewall_rule': self._handle_create_firewall_rule,
+            'hash_reputation': self._handle_hash_reputation,
+            'get_threat_notes': self._handle_get_threat_notes,
+            'add_threat_note': self._handle_add_threat_note,
+            'export_threat_timeline': self._handle_export_threat_timeline,
+            'export_mitigation_report': self._handle_export_mitigation_report,
+            'export_threats': self._handle_export_threats,
+            "fetch_threat_file": self._handle_fetch_threat_file,
+            "update_threat_analyst_verdict": self._handle_update_threat_analyst_verdict,
+            "get_threat_timeline": self._handle_get_threat_timeline,
+            "update_threat_incident": self._handle_update_threat_incident,
+            "download_from_cloud": self._handle_download_from_cloud
+        }
+        handler = function_map.get(action_id)
+        if handler:
+            ret_val = handler(param)
         return ret_val
 
     def initialize(self):
         self._log.info('action=initialize status=start')
         self._state = self.load_state()
+
+        if not isinstance(self._state, dict):
+            self.debug_print("Resetting the state file with the default format")
+            self._state = {
+                "app_version": self.get_app_json().get('app_version')
+            }
+            return self.set_status(phantom.APP_ERROR, SENTINELONE_VAULT_STATE_FILE_CORRUPT_ERR)
+
         self._log.info(('action=initialize state={}').format(self._state))
         config = self.get_config()
-        self._base_url = config['sentinelone_console_url']
+        self._base_url = config['sentinelone_console_url'].rstrip('/')
         self.token = config['sentinelone_api_token']
         return phantom.APP_SUCCESS
 
@@ -601,8 +1473,9 @@ class SentineloneConnector(BaseConnector):
 
 
 def main():
-    import pudb
     import argparse
+
+    import pudb
     pudb.set_trace()
     argparser = argparse.ArgumentParser()
     argparser.add_argument('input_test_json', help='Input Test JSON file')
@@ -619,7 +1492,7 @@ def main():
         try:
             login_url = SentineloneConnector._get_phantom_base_url() + '/login'
             print("Accessing the Login page")
-            r = requests.get(login_url, verify=False)
+            r = requests.get(login_url, verify=False)  # nosemgrep
             csrftoken = r.cookies['csrftoken']
             data = dict()
             data['username'] = username
@@ -629,11 +1502,11 @@ def main():
             headers['Cookie'] = 'csrftoken=' + csrftoken
             headers['Referer'] = login_url
             print("Logging into Platform to get the session id")
-            r2 = requests.post(login_url, verify=False, data=data, headers=headers)
+            r2 = requests.post(login_url, verify=False, data=data, headers=headers)  # nosemgrep
             session_id = r2.cookies['sessionid']
         except Exception as e:
             print("Unable to get session id from the platform. Error: " + str(e))
-            exit(1)
+            sys.exit(1)
     with open(args.input_test_json) as f:
         in_json = f.read()
         in_json = json.loads(in_json)
@@ -645,7 +1518,7 @@ def main():
             connector._set_csrf_info(csrftoken, headers['Referer'])
         ret_val = connector._handle_action(json.dumps(in_json), None)
         print(json.dumps(json.loads(ret_val), indent=4))
-    exit(0)
+    sys.exit(0)
 
 
 if __name__ == '__main__':
