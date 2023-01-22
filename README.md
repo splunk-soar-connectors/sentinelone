@@ -2,7 +2,7 @@
 # SentinelOne
 
 Publisher: SentinelOne  
-Connector Version: 2\.2\.6  
+Connector Version: 2\.2\.7  
 Product Vendor: SentinelOne  
 Product Name: SentinelOne  
 Product Version Supported (regex): "\.\*"  
@@ -11,7 +11,7 @@ Minimum Product Version: 5\.1\.0
 This app integrates with the SentinelOne Singularity platform to perform prevention, detection, remediation, and forensic endpoint management tasks
 
 [comment]: # " File: README.md"
-[comment]: # "  Copyright (c) SentinelOne, 2018-2022"
+[comment]: # "  Copyright (c) SentinelOne, 2018-2023"
 [comment]: # ""
 [comment]: # "  Licensed under the Apache License, Version 2.0 (the 'License');"
 [comment]: # "  you may not use this file except in compliance with the License."
