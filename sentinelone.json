@@ -17,8 +17,8 @@
         }
     ],
     "license": "Copyright (c) SentinelOne, 2018-2023",
-    "app_version": "2.2.6",
-    "utctime_updated": "2022-01-31T08:26:54.000000Z",
+    "app_version": "2.2.7",
+    "utctime_updated": "2023-01-22T04:55:04.000000Z",
     "package_name": "phantom_sentinelone",
     "main_module": "sentinelone_connector.py",
     "min_phantom_version": "5.1.0",
