@@ -1316,14 +1316,14 @@ class SentineloneConnector(BaseConnector):
         self._state['last_ingestion_time'] = end_time
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _get_alerts(self, action_result, start_time, end_time, max_limit=None):
+    def _get_alerts(self, action_result, start_time, end_time, max_limit=1000):
         threats_list = []
         self.save_progress('Getting threat data')
         header = self.HEADER
         header["Authorization"] = "APIToken %s" % self.token
         s1_start_time = datetime.fromtimestamp(start_time).strftime('%Y-%m-%dT%H:%M:%S.000000Z')
         s1_end_time = datetime.fromtimestamp(end_time).strftime('%Y-%m-%dT%H:%M:%S.000000Z')
-        params = {"createdAt__gte": s1_start_time, "createdAt__lte": s1_end_time, "limit": 1000}
+        params = {"createdAt__gte": s1_start_time, "createdAt__lte": s1_end_time, "limit": max_limit}
         ret_val, response = self._make_rest_call('/web/api/v2.1/threats', action_result=action_result, headers=header, params=params)
         if phantom.is_fail(ret_val):
             return (action_result.get_status(), None)
