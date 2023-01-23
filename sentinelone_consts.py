@@ -16,8 +16,8 @@
 SENTINELONE_24_HOUR_GAP = 86400
 
 # Constants relating to '_get_error_message_from_exception'
-ERR_MSG_UNAVAILABLE = "Error message unavailable. Please check the asset configuration and|or action parameters"
+ERROR_MESSAGE_UNAVAILABLE = "Error message unavailable. Please check the asset configuration and|or action parameters"
 
-SENTINELONE_VAULT_STATE_FILE_CORRUPT_ERR = "Error occurred while loading the state file due to its unexpected format.\
+SENTINELONE_VAULT_STATE_FILE_CORRUPT_ERROR = "Error occurred while loading the state file due to its unexpected format.\
      Resetting the state file with the default format. Please try again."
-SENTINELONE_ERR_INVALID_FIELD = "Please provide a valid value in the '{key}' action parameter"
+SENTINELONE_ERROR_INVALID_FIELD = "Please provide a valid value in the '{key}' action parameter"
