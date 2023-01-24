@@ -56,22 +56,22 @@ class SentineloneConnector(BaseConnector):
         """
 
         error_code = None
-        error_msg = ERR_MSG_UNAVAILABLE
+        error_message = ERROR_MESSAGE_UNAVAILABLE
 
         try:
             if hasattr(e, "args"):
                 if len(e.args) > 1:
                     error_code = e.args[0]
-                    error_msg = e.args[1]
+                    error_message = e.args[1]
                 elif len(e.args) == 1:
-                    error_msg = e.args[0]
+                    error_message = e.args[0]
         except:
             pass
 
         if not error_code:
-            error_text = "Error Message: {}".format(error_msg)
+            error_text = "Error Message: {}".format(error_message)
         else:
-            error_text = "Error Code: {}. Error Message: {}".format(error_code, error_msg)
+            error_text = "Error Code: {}. Error Message: {}".format(error_code, error_message)
 
         return error_text
 
@@ -108,10 +108,10 @@ class SentineloneConnector(BaseConnector):
         try:
             resp_json = r.json()
         except Exception as e:
-            err_msg = self._get_error_message_from_exception(e)
+            err_message = self._get_error_message_from_exception(e)
             return RetVal(
                 action_result.set_status(
-                    phantom.APP_ERROR, "Unable to parse JSON response. Error: {0}".format(err_msg)
+                    phantom.APP_ERROR, "Unable to parse JSON response. Error: {0}".format(err_message)
                 ), None
             )
         if 200 <= r.status_code < 399:
@@ -159,10 +159,10 @@ class SentineloneConnector(BaseConnector):
                 **kwargs
             )
         except Exception as e:
-            err_msg = self._get_error_message_from_exception(e)
+            err_message = self._get_error_message_from_exception(e)
             return RetVal(
                 action_result.set_status(
-                    phantom.APP_ERROR, "Error Connecting to server. Details: {0}".format(err_msg)
+                    phantom.APP_ERROR, "Error Connecting to server. Details: {0}".format(err_message)
                 ), resp_json
             )
         return self._process_response(r, action_result)
@@ -869,7 +869,7 @@ class SentineloneConnector(BaseConnector):
                 if tag_ids is not None or len(tag_ids) > 0:
                     tag_ids = [value.strip() for value in tag_ids.split(",") if value.strip()]
                     if not tag_ids:
-                        return action_result.set_status(phantom.APP_ERROR, SENTINELONE_ERR_INVALID_FIELD.format(key="tag_ids"))
+                        return action_result.set_status(phantom.APP_ERROR, SENTINELONE_ERROR_INVALID_FIELD.format(key="tag_ids"))
                     body['data']['tagIds'] = tag_ids
             ret_val, response = self._make_rest_call(
                 '/web/api/v2.1/firewall-control', action_result, headers=header, method='post', data=json.dumps(body))
@@ -924,7 +924,7 @@ class SentineloneConnector(BaseConnector):
         header["Authorization"] = "APIToken %s" % self.token
         s1_threat_ids = [value.strip() for value in s1_threat_ids.split(",") if value.strip()]
         if not s1_threat_ids:
-            return action_result.set_status(phantom.APP_ERROR, SENTINELONE_ERR_INVALID_FIELD.format(key="s1_threat_ids"))
+            return action_result.set_status(phantom.APP_ERROR, SENTINELONE_ERROR_INVALID_FIELD.format(key="s1_threat_ids"))
         try:
             body = {
                 "data": {
@@ -1308,22 +1308,22 @@ class SentineloneConnector(BaseConnector):
             container_id = self._create_container(threat)
             if not container_id:
                 continue
-            artifacts_creation_status, artifacts_creation_msg = self._create_artifacts(threat=threat, container_id=container_id)
+            artifacts_creation_status, artifacts_creation_message = self._create_artifacts(threat=threat, container_id=container_id)
             if phantom.is_fail(artifacts_creation_status):
-                self.debug_print(('Error while creating artifacts for container with ID {container_id}. {error_msg}').format(
-                    container_id=container_id, error_msg=artifacts_creation_msg))
+                self.debug_print(('Error while creating artifacts for container with ID {container_id}. {error_message}').format(
+                    container_id=container_id, error_message=artifacts_creation_message))
         self._state['first_run'] = False
         self._state['last_ingestion_time'] = end_time
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _get_alerts(self, action_result, start_time, end_time, max_limit=None):
+    def _get_alerts(self, action_result, start_time, end_time, max_limit=SENTINELONE_MAX_CONTAINER_COUNT):
         threats_list = []
         self.save_progress('Getting threat data')
         header = self.HEADER
         header["Authorization"] = "APIToken %s" % self.token
         s1_start_time = datetime.fromtimestamp(start_time).strftime('%Y-%m-%dT%H:%M:%S.000000Z')
         s1_end_time = datetime.fromtimestamp(end_time).strftime('%Y-%m-%dT%H:%M:%S.000000Z')
-        params = {"createdAt__gte": s1_start_time, "createdAt__lte": s1_end_time, "limit": 1000}
+        params = {"createdAt__gte": s1_start_time, "createdAt__lte": s1_end_time, "limit": max_limit}
         ret_val, response = self._make_rest_call('/web/api/v2.1/threats', action_result=action_result, headers=header, params=params)
         if phantom.is_fail(ret_val):
             return (action_result.get_status(), None)
@@ -1363,11 +1363,11 @@ class SentineloneConnector(BaseConnector):
         container_dict['severity'] = severity
         tags = {'identified_at': threat.get('threatInfo', {}).get('identifiedAt')}
         container_dict['tags'] = [('{}={}').format(x, tags[x]) for x in tags if tags[x] is not None]
-        container_creation_status, container_creation_msg, container_id = self.save_container(container=container_dict)
+        container_creation_status, container_creation_message, container_id = self.save_container(container=container_dict)
         if phantom.is_fail(container_creation_status):
-            self.debug_print(container_creation_msg)
+            self.debug_print(container_creation_message)
             self.save_progress(('Error while creating container for threat {threat_name}. {error_message}').format(
-                threat_name=threat_name, error_message=container_creation_msg))
+                threat_name=threat_name, error_message=container_creation_message))
             return
         else:
             return container_id
@@ -1401,9 +1401,9 @@ class SentineloneConnector(BaseConnector):
             cef['fileHashSha1'] = threat.get('threatInfo', {}).get('sha1')
         artifact_dict['cef'] = cef
         artifacts_list.append(artifact_dict)
-        create_artifact_status, create_artifact_msg, _ = self.save_artifacts(artifacts_list)
+        create_artifact_status, create_artifact_message, _ = self.save_artifacts(artifacts_list)
         if phantom.is_fail(create_artifact_status):
-            return (phantom.APP_ERROR, create_artifact_msg)
+            return (phantom.APP_ERROR, create_artifact_message)
         return (phantom.APP_SUCCESS, 'Artifacts created successfully')
 
     def handle_action(self, param):
@@ -1459,7 +1459,7 @@ class SentineloneConnector(BaseConnector):
             self._state = {
                 "app_version": self.get_app_json().get('app_version')
             }
-            return self.set_status(phantom.APP_ERROR, SENTINELONE_VAULT_STATE_FILE_CORRUPT_ERR)
+            return self.set_status(phantom.APP_ERROR, SENTINELONE_VAULT_STATE_FILE_CORRUPT_ERROR)
 
         self._log.info(('action=initialize state={}').format(self._state))
         config = self.get_config()
