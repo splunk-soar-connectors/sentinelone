@@ -14,6 +14,7 @@
 # and limitations under the License.
 
 SENTINELONE_24_HOUR_GAP = 86400
+SENTINELONE_MAX_CONTAINER_COUNT = 100
 
 # Constants relating to '_get_error_message_from_exception'
 ERROR_MESSAGE_UNAVAILABLE = "Error message unavailable. Please check the asset configuration and|or action parameters"

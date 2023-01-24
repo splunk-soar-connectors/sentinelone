@@ -3389,18 +3389,18 @@
             "read_only": true,
             "parameters": {
                 "container_id": {
-                    "description": "Container IDs to limit the ingestion to",
+                    "description": "Parameter Ignored in this app",
                     "data_type": "string",
                     "allow_list": true,
                     "order": 0
                 },
                 "start_time": {
-                    "description": "Start of the time range, in epoch time (milliseconds)",
+                    "description": "Parameter Ignored in this app",
                     "data_type": "numeric",
                     "order": 1
                 },
                 "end_time": {
-                    "description": "End of the time range, in epoch time (milliseconds)",
+                    "description": "Parameter Ignored in this app",
                     "data_type": "numeric",
                     "order": 2
                 },
@@ -3410,7 +3410,7 @@
                     "order": 3
                 },
                 "artifact_count": {
-                    "description": "Maximum number of artifact records to query for",
+                    "description": "Parameter Ignored in this app",
                     "data_type": "numeric",
                     "order": 4
                 }

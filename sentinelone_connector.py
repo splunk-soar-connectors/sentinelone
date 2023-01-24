@@ -1316,7 +1316,7 @@ class SentineloneConnector(BaseConnector):
         self._state['last_ingestion_time'] = end_time
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _get_alerts(self, action_result, start_time, end_time, max_limit=1000):
+    def _get_alerts(self, action_result, start_time, end_time, max_limit=SENTINELONE_MAX_CONTAINER_COUNT):
         threats_list = []
         self.save_progress('Getting threat data')
         header = self.HEADER
