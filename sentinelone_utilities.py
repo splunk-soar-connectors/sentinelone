@@ -1,5 +1,6 @@
 # File: sentinelone_utilities.py
-# Copyright (c) SentinelOne, 2018-2022
+# Copyright (c) SentinelOne, 2018-2023
+
 
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

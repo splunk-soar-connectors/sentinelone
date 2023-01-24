@@ -2,7 +2,7 @@
 # SentinelOne
 
 Publisher: SentinelOne  
-Connector Version: 2\.2\.6  
+Connector Version: 2\.2\.7  
 Product Vendor: SentinelOne  
 Product Name: SentinelOne  
 Product Version Supported (regex): "\.\*"  
@@ -11,7 +11,7 @@ Minimum Product Version: 5\.1\.0
 This app integrates with the SentinelOne Singularity platform to perform prevention, detection, remediation, and forensic endpoint management tasks
 
 [comment]: # " File: README.md"
-[comment]: # "  Copyright (c) SentinelOne, 2018-2022"
+[comment]: # "  Copyright (c) SentinelOne, 2018-2023"
 [comment]: # ""
 [comment]: # "  Licensed under the Apache License, Version 2.0 (the 'License');"
 [comment]: # "  you may not use this file except in compliance with the License."
@@ -963,11 +963,11 @@ Read only: **True**
 #### Action Parameters
 PARAMETER | REQUIRED | DESCRIPTION | TYPE | CONTAINS
 --------- | -------- | ----------- | ---- | --------
-**container\_id** |  optional  | Container IDs to limit the ingestion to | string | 
-**start\_time** |  optional  | Start of the time range, in epoch time \(milliseconds\) | numeric | 
-**end\_time** |  optional  | End of the time range, in epoch time \(milliseconds\) | numeric | 
+**container\_id** |  optional  | Parameter Ignored in this app | string | 
+**start\_time** |  optional  | Parameter Ignored in this app | numeric | 
+**end\_time** |  optional  | Parameter Ignored in this app | numeric | 
 **container\_count** |  optional  | Maximum number of container records to query for | numeric | 
-**artifact\_count** |  optional  | Maximum number of artifact records to query for | numeric | 
+**artifact\_count** |  optional  | Parameter Ignored in this app | numeric | 
 
 #### Action Output
 No Output
