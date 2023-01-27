@@ -40,7 +40,7 @@
         "max_containers": {
             "description": "Maximum Number of Containers to Ingest",
             "data_type": "numeric",
-            "value": 100,
+            "default": 100,
             "required": true,
             "order": 2
         }
