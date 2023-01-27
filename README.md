@@ -2,7 +2,7 @@
 # SentinelOne
 
 Publisher: SentinelOne  
-Connector Version: 2\.2\.7  
+Connector Version: 2\.2\.8  
 Product Vendor: SentinelOne  
 Product Name: SentinelOne  
 Product Version Supported (regex): "\.\*"  
@@ -69,6 +69,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
 **sentinelone\_console\_url** |  required  | string | SentinelOne Console URL
 **sentinelone\_api\_token** |  required  | password | SentinelOne API Token
+**max\_containers** |  required  | numeric | Maximum Number of Containers to Ingest
 
 ### Supported Actions  
 [test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration  
