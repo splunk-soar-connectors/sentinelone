@@ -1294,9 +1294,7 @@ class SentineloneConnector(BaseConnector):
             container_count = int(param.get(phantom.APP_JSON_CONTAINER_COUNT))
         else:
             container_count = int(config.get('max_containers'))
-        self.debug_print('Maximum number of containers to ingest:{}'.format(container_count))
         action_result = self.add_action_result(ActionResult(dict(param)))
-        container_count = int(param.get(phantom.APP_JSON_CONTAINER_COUNT))
         end_time = int(time.time())
         if self.is_poll_now() or self._state.get("first_run", True):
             start_time = end_time - SENTINELONE_24_HOUR_GAP
@@ -1323,7 +1321,7 @@ class SentineloneConnector(BaseConnector):
         self._state['last_ingestion_time'] = end_time
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _get_alerts(self, action_result, start_time, end_time, max_limit=None):
+    def _get_alerts(self, action_result, start_time, end_time, max_limit):
         threats_list = []
         self.save_progress('Getting threat data')
         header = self.HEADER
