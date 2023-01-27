@@ -36,6 +36,13 @@
             "data_type": "password",
             "required": true,
             "order": 1
+        },
+        "max_containers": {
+            "description": "Maximum Number of Containers to Ingest",
+            "data_type": "numeric",
+            "value": 100,
+            "required": true,
+            "order": 2
         }
     },
     "actions": [
