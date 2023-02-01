@@ -179,7 +179,7 @@ class SentineloneConnector(BaseConnector):
                 }
         }
         ret_val, response = self._make_rest_call(
-            '/web/api/v2.1/users/login/by-api-token', action_result, params=None, headers=header, data=json.dumps(body), method='post')
+            '/web/api/v2.1/accounts', action_result, params=None, headers=header, data=json.dumps(body), method='get')
         if phantom.is_fail(ret_val):
             self.save_progress("Test Connectivity Failed")
             return action_result.get_status()
@@ -1294,6 +1294,8 @@ class SentineloneConnector(BaseConnector):
             container_count = int(param.get(phantom.APP_JSON_CONTAINER_COUNT))
         else:
             container_count = int(config.get('max_containers'))
+        if container_count > SENTINELONE_MAX_CONTAINER_COUNT:
+            container_count = SENTINELONE_MAX_CONTAINER_COUNT
         action_result = self.add_action_result(ActionResult(dict(param)))
         end_time = int(time.time())
         if self.is_poll_now() or self._state.get("first_run", True):
@@ -1336,11 +1338,13 @@ class SentineloneConnector(BaseConnector):
         try:
             threats_list += response.get('data')
             nextCursor = response.get('pagination', {}).get('nextCursor')
-            while nextCursor:
+            params["cursor"] = response["pagination"]["nextCursor"]
+            while nextCursor is not None:
                 ret_val, response = self._make_rest_call('/web/api/v2.1/threats', action_result=action_result, headers=header, params=params)
-                self.save_progress("Ret_val: {0}".format(ret_val))
+                self.save_progress("Response: {0}, Ret_val: {1}".format(response, ret_val))
                 threats_list += response.get('data')
                 nextCursor = response.get('pagination', {}).get('nextCursor')
+                params["cursor"] = response["pagination"]["nextCursor"]
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server"), None
         self.save_progress("Total threats found: {threats}".format(threats=len(threats_list)))
