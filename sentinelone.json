@@ -17,8 +17,8 @@
         }
     ],
     "license": "Copyright (c) SentinelOne, 2018-2023",
-    "app_version": "2.2.7",
-    "utctime_updated": "2023-01-24T19:28:22.000000Z",
+    "app_version": "2.2.8",
+    "utctime_updated": "2023-01-27T18:56:22.000000Z",
     "package_name": "phantom_sentinelone",
     "main_module": "sentinelone_connector.py",
     "min_phantom_version": "5.1.0",
@@ -36,6 +36,13 @@
             "data_type": "password",
             "required": true,
             "order": 1
+        },
+        "max_containers": {
+            "description": "Maximum Number of Containers to Ingest (limit=1000)",
+            "data_type": "numeric",
+            "default": 100,
+            "required": true,
+            "order": 2
         }
     },
     "actions": [

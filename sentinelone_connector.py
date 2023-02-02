@@ -179,7 +179,7 @@ class SentineloneConnector(BaseConnector):
                 }
         }
         ret_val, response = self._make_rest_call(
-            '/web/api/v2.1/users/login/by-api-token', action_result, params=None, headers=header, data=json.dumps(body), method='post')
+            '/web/api/v2.1/accounts', action_result, params=None, headers=header, data=json.dumps(body), method='get')
         if phantom.is_fail(ret_val):
             self.save_progress("Test Connectivity Failed")
             return action_result.get_status()
@@ -1289,8 +1289,12 @@ class SentineloneConnector(BaseConnector):
 
     def _handle_on_poll(self, param):
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
+        config = self.get_config()
+        if self.is_poll_now():
+            container_count = int(param.get(phantom.APP_JSON_CONTAINER_COUNT))
+        else:
+            container_count = int(config.get('max_containers'))
         action_result = self.add_action_result(ActionResult(dict(param)))
-        container_count = int(param.get(phantom.APP_JSON_CONTAINER_COUNT))
         end_time = int(time.time())
         if self.is_poll_now() or self._state.get("first_run", True):
             start_time = end_time - SENTINELONE_24_HOUR_GAP
@@ -1317,25 +1321,30 @@ class SentineloneConnector(BaseConnector):
         self._state['last_ingestion_time'] = end_time
         return action_result.set_status(phantom.APP_SUCCESS)
 
-    def _get_alerts(self, action_result, start_time, end_time, max_limit=SENTINELONE_MAX_CONTAINER_COUNT):
+    def _get_alerts(self, action_result, start_time, end_time, max_limit):
         threats_list = []
         self.save_progress('Getting threat data')
         header = self.HEADER
         header["Authorization"] = "APIToken %s" % self.token
         s1_start_time = datetime.fromtimestamp(start_time).strftime('%Y-%m-%dT%H:%M:%S.000000Z')
         s1_end_time = datetime.fromtimestamp(end_time).strftime('%Y-%m-%dT%H:%M:%S.000000Z')
+        if max_limit > SENTINELONE_MAX_CONTAINER_COUNT or max_limit < SENTINELONE_MIN_CONTAINER_COUNT:
+            max_limit = SENTINELONE_MAX_CONTAINER_COUNT
         params = {"createdAt__gte": s1_start_time, "createdAt__lte": s1_end_time, "limit": max_limit}
+        self.debug_print('Maximum number of containers to ingest:{}'.format(max_limit))
         ret_val, response = self._make_rest_call('/web/api/v2.1/threats', action_result=action_result, headers=header, params=params)
         if phantom.is_fail(ret_val):
             return (action_result.get_status(), None)
         try:
             threats_list += response.get('data')
             nextCursor = response.get('pagination', {}).get('nextCursor')
-            while nextCursor:
+            params["cursor"] = response["pagination"]["nextCursor"]
+            while nextCursor is not None:
                 ret_val, response = self._make_rest_call('/web/api/v2.1/threats', action_result=action_result, headers=header, params=params)
-                self.save_progress("Ret_val: {0}".format(ret_val))
+                self.save_progress("Response: {0}, Ret_val: {1}".format(response, ret_val))
                 threats_list += response.get('data')
                 nextCursor = response.get('pagination', {}).get('nextCursor')
+                params["cursor"] = response["pagination"]["nextCursor"]
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server"), None
         self.save_progress("Total threats found: {threats}".format(threats=len(threats_list)))
