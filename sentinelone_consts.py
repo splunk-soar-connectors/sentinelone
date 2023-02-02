@@ -16,6 +16,7 @@
 
 SENTINELONE_24_HOUR_GAP = 86400
 SENTINELONE_MAX_CONTAINER_COUNT = 1000  # SentinelOne threats API limit
+SENTINELONE_MIN_CONTAINER_COUNT = 1
 
 
 # Constants relating to '_get_error_message_from_exception'

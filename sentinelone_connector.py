@@ -1294,8 +1294,6 @@ class SentineloneConnector(BaseConnector):
             container_count = int(param.get(phantom.APP_JSON_CONTAINER_COUNT))
         else:
             container_count = int(config.get('max_containers'))
-        if container_count > SENTINELONE_MAX_CONTAINER_COUNT:
-            container_count = SENTINELONE_MAX_CONTAINER_COUNT
         action_result = self.add_action_result(ActionResult(dict(param)))
         end_time = int(time.time())
         if self.is_poll_now() or self._state.get("first_run", True):
@@ -1330,6 +1328,8 @@ class SentineloneConnector(BaseConnector):
         header["Authorization"] = "APIToken %s" % self.token
         s1_start_time = datetime.fromtimestamp(start_time).strftime('%Y-%m-%dT%H:%M:%S.000000Z')
         s1_end_time = datetime.fromtimestamp(end_time).strftime('%Y-%m-%dT%H:%M:%S.000000Z')
+        if max_limit > SENTINELONE_MAX_CONTAINER_COUNT or max_limit < SENTINELONE_MIN_CONTAINER_COUNT:
+            max_limit = SENTINELONE_MAX_CONTAINER_COUNT
         params = {"createdAt__gte": s1_start_time, "createdAt__lte": s1_end_time, "limit": max_limit}
         self.debug_print('Maximum number of containers to ingest:{}'.format(max_limit))
         ret_val, response = self._make_rest_call('/web/api/v2.1/threats', action_result=action_result, headers=header, params=params)
