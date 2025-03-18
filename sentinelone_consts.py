@@ -1,5 +1,5 @@
 # File: sentinelone_consts.py
-# Copyright (c) SentinelOne, 2018-2023
+# Copyright (c) SentinelOne, 2018-2025
 
 
 #
