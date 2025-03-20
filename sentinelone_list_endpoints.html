@@ -1,19 +1,19 @@
 {% extends 'widgets/widget_template.html' %}
 {% load custom_template %}
-
-{% block custom_title_prop %}{% if title_logo %}style="background-size: auto 60%; background-position: 50%; background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo }}');"{% endif %}{% endblock %}
+{% block custom_title_prop %}
+  {% if title_logo %}
+    style="background-size: auto 60%; background-position: 50%; background-repeat: no-repeat; background-image: url('/app_resource/{{ title_logo }}');"
+  {% endif %}
+{% endblock %}
 {% block title1 %}{{ title1 }}{% endblock %}
 {% block title2 %}{{ title2 }}{% endblock %}
-{% block custom_tools %}
-{% endblock %}
-{% block widget_content %} <!-- Main Start Block -->
-
-<!-- File: sentinelone_list_endpoints.html
-  
-    Copyright SentinelOne 2018-2019
+{% block custom_tools %}{% endblock %}
+{% block widget_content %}
+  <!-- Main Start Block -->
+  <!-- File: sentinelone_list_endpoints.html
+    Copyright SentinelOne 2018-2025
 -->
-<style>
-
+  <style>
     .sentinelone a:hover {
         text-decoration:underline;
     }
@@ -65,55 +65,57 @@
     }
 
 
-</style>
-
-<div class="sentinelone" style="overflow: auto; width: 100% height: 100%; padding-left:10px; padding-right:10px">
+  </style>
+  <div class="sentinelone"
+       style="overflow: auto;
+              width: 100% height: 100%;
+              padding-left:10px;
+              padding-right:10px">
     <!-- Main Div -->
-
-    {% for result in results %} <!-- loop for each result -->
-        {% if not result.data %}
-            <h4 class="wf-h4-style">No data found</h4>
-        {% else %}
-            <h4 class="wf-h4-style">List Users Details</h4>
-
-            <div class="list_endpoints_table overflow-column">
-                    <table class="phantom-table dataTable">
-                        <thead>
-                            <th class="widget-th">Agent ID</th>
-                            <th class="widget-th">Hostname</th>
-							<th class="widget-th">OS</th>
-                            <th class="widget-th">User</th>
-                        </thead>
-                        <tbody>
-                        {% for item in result.data %}
-                        <tr>
-                            <td class="widget-td">{{ item.id }}</td>
-                            <td class="widget-td">
-								<a href="javascript:;" onclick="context_menu(this, [{'contains': ['host name'], 'value':'{{ item.computerName }}' }], 0, {{ container.id }}, null, false);">
-                                    {{ item.computerName }}
-                                    &nbsp;
-                                    <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                                </a>
-							</td>
-							<td class="widget-td">{{ item.osName }}</td>
-                            <td class="widget-td">
-								<a href="javascript:;" onclick="context_menu(this, [{'contains': ['user name'], 'value':'{{ item.osUsername }}' }], 0, {{ container.id }}, null, false);">
-                                    {{ item.osUsername }}
-                                    &nbsp;
-                                    <span class="fa fa-caret-down" style="font-size: smaller;"></span>
-                                </a>
-							</td>
-                        </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-            </div>
-
-        {% endif %}
+    {% for result in results %}
+      <!-- loop for each result -->
+      {% if not result.data %}
+        <h4 class="wf-h4-style">No data found</h4>
+      {% else %}
+        <h4 class="wf-h4-style">List Users Details</h4>
+        <div class="list_endpoints_table overflow-column">
+          <table class="phantom-table dataTable">
+            <thead>
+              <th class="widget-th">Agent ID</th>
+              <th class="widget-th">Hostname</th>
+              <th class="widget-th">OS</th>
+              <th class="widget-th">User</th>
+            </thead>
+            <tbody>
+              {% for item in result.data %}
+                <tr>
+                  <td class="widget-td">{{ item.id }}</td>
+                  <td class="widget-td">
+                    <a href="javascript:;"
+                       onclick="context_menu(this, [{'contains': ['host name'], 'value':'{{ item.computerName }}' }], 0, {{ container.id }}, null, false);">
+                      {{ item.computerName }}
+                      &nbsp;
+                      <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                    </a>
+                  </td>
+                  <td class="widget-td">{{ item.osName }}</td>
+                  <td class="widget-td">
+                    <a href="javascript:;"
+                       onclick="context_menu(this, [{'contains': ['user name'], 'value':'{{ item.osUsername }}' }], 0, {{ container.id }}, null, false);">
+                      {{ item.osUsername }}
+                      &nbsp;
+                      <span class="fa fa-caret-down" style="font-size: smaller;"></span>
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
     {% endfor %}
-</div>
-
-<script>
+  </div>
+  <script>
 $.extend(true, $.fn.dataTable.defaults, {
     "searching": true,
     "bLengthChange": false,
@@ -132,6 +134,5 @@ $.extend(true, $.fn.dataTable.defaults, {
   });
   $('.dataTable').DataTable();
 
-</script>
-
+  </script>
 {% endblock %}
