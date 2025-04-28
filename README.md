@@ -1,7 +1,7 @@
 # SentinelOne
 
 Publisher: SentinelOne \
-Connector Version: 2.2.8 \
+Connector Version: 2.2.9 \
 Product Vendor: SentinelOne \
 Product Name: SentinelOne \
 Minimum Product Version: 5.1.0
