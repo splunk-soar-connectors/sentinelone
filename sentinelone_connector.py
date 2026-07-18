@@ -19,7 +19,7 @@ import json
 import sys
 import time
 from datetime import datetime
-from urllib.parse import unquote
+from urllib.parse import quote, unquote
 
 import phantom.app as phantom
 import requests
@@ -811,7 +811,7 @@ class SentineloneConnector(BaseConnector):
         summary["hash"] = hash
         header = self.HEADER
         header["Authorization"] = f"APIToken {self.token}"
-        ret_val, response = self._make_rest_call(f"/web/api/v2.1/hashes/{hash}/reputation", action_result, headers=header)
+        ret_val, response = self._make_rest_call(f"/web/api/v2.1/hashes/{quote(str(hash), safe='')}/reputation", action_result, headers=header)
         action_result.add_data(response)
         self.save_progress(f"Ret_val: {ret_val}")
         if phantom.is_fail(ret_val):
@@ -827,7 +827,9 @@ class SentineloneConnector(BaseConnector):
         summary["s1_threat_id"] = s1_threat_id
         header = self.HEADER
         header["Authorization"] = f"APIToken {self.token}"
-        ret_val, response = self._make_rest_call(f"/web/api/v2.1/threats/{s1_threat_id}/notes", action_result, headers=header)
+        ret_val, response = self._make_rest_call(
+            f"/web/api/v2.1/threats/{quote(str(s1_threat_id), safe='')}/notes", action_result, headers=header
+        )
         self.save_progress(f"Ret_val: {ret_val}")
         if phantom.is_fail(ret_val):
             self.save_progress(f"Failed to get threat notes.  Error: {action_result.get_message()}")
@@ -870,7 +872,7 @@ class SentineloneConnector(BaseConnector):
         if threat_id_found == "-1":
             return action_result.set_status(phantom.APP_ERROR, "Threat ID is invalid")
         try:
-            action_result.add_data(f"{self._base_url}/web/api/v2.1/export/threats/{s1_threat_id}/timeline")
+            action_result.add_data(f"{self._base_url}/web/api/v2.1/export/threats/{quote(str(s1_threat_id), safe='')}/timeline")
         except Exception:
             return action_result.set_status(phantom.APP_ERROR, "Did not get proper response from the server")
         return action_result.set_status(phantom.APP_SUCCESS, "Successfully exported threat timeline")
@@ -994,7 +996,9 @@ class SentineloneConnector(BaseConnector):
         if threat_id_found == "-1":
             return action_result.set_status(phantom.APP_ERROR, "Threat ID is invalid")
         else:
-            ret_val, response = self._make_rest_call(f"/web/api/v2.1/threats/{s1_threat_id}/timeline", action_result, headers=header)
+            ret_val, response = self._make_rest_call(
+                f"/web/api/v2.1/threats/{quote(str(s1_threat_id), safe='')}/timeline", action_result, headers=header
+            )
             action_result.add_data(response)
             self.save_progress(f"Ret_val: {ret_val}")
             next = True
@@ -1002,7 +1006,10 @@ class SentineloneConnector(BaseConnector):
                 if response.get("pagination", {}).get("nextCursor") is not None:
                     params = {"cursor": response["pagination"]["nextCursor"]}
                     ret_val, response = self._make_rest_call(
-                        f"/web/api/v2.1/threats/{s1_threat_id}/timeline", action_result, headers=header, params=params
+                        f"/web/api/v2.1/threats/{quote(str(s1_threat_id), safe='')}/timeline",
+                        action_result,
+                        headers=header,
+                        params=params,
                     )
                     action_result.add_data(response)
                 else:
@@ -1048,7 +1055,9 @@ class SentineloneConnector(BaseConnector):
         header = self.HEADER
         header["Authorization"] = f"APIToken {self.token}"
         try:
-            ret_val, response = self._make_rest_call(f"/web/api/v2.1/threats/{s1_threat_id}/download-from-cloud", action_result, headers=header)
+            ret_val, response = self._make_rest_call(
+                f"/web/api/v2.1/threats/{quote(str(s1_threat_id), safe='')}/download-from-cloud", action_result, headers=header
+            )
             action_result.add_data(response)
             if phantom.is_fail(ret_val):
                 return action_result.get_status()
@@ -1060,7 +1069,10 @@ class SentineloneConnector(BaseConnector):
         header = self.HEADER
         header["Authorization"] = f"APIToken {self.token}"
         ret_val, response = self._make_rest_call(
-            f"/web/api/v2.1/threats/{search_text}/timeline?skip=0&limit=30&sortOrder=desc", action_result, headers=header, method="get"
+            f"/web/api/v2.1/threats/{quote(str(search_text), safe='')}/timeline?skip=0&limit=30&sortOrder=desc",
+            action_result,
+            headers=header,
+            method="get",
         )
         if phantom.is_fail(ret_val):
             return str(-1)
@@ -1109,7 +1121,7 @@ class SentineloneConnector(BaseConnector):
         header = self.HEADER
         header["Authorization"] = f"APIToken {self.token}"
         report_id, response = self._make_rest_call(
-            f"/web/api/v2.1/private/threats/{search_text}/analysis", action_result, headers=header, method="get"
+            f"/web/api/v2.1/private/threats/{quote(str(search_text), safe='')}/analysis", action_result, headers=header, method="get"
         )
         if phantom.is_fail(report_id):
             return str(-1)
