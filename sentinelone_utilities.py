@@ -1,5 +1,5 @@
 # File: sentinelone_utilities.py
-# Copyright (c) SentinelOne, 2018-2025
+# Copyright (c) SentinelOne, 2018-2026
 
 
 #

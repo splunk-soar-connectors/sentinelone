@@ -1,9 +1,9 @@
 # SentinelOne
 
-Publisher: SentinelOne \
-Connector Version: 2.2.9 \
-Product Vendor: SentinelOne \
-Product Name: SentinelOne \
+Publisher: SentinelOne <br>
+Connector Version: 2.2.9 <br>
+Product Vendor: SentinelOne <br>
+Product Name: SentinelOne <br>
 Minimum Product Version: 5.1.0
 
 This app integrates with the SentinelOne Singularity platform to perform prevention, detection, remediation, and forensic endpoint management tasks
@@ -20,44 +20,44 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 
 ### Supported Actions
 
-[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration \
-[block hash](#action-block-hash) - Add a file hash to the global blocklist \
-[unblock hash](#action-unblock-hash) - Remove a hash from the global blocklist \
-[quarantine device](#action-quarantine-device) - Quarantine an endpoint \
-[unquarantine device](#action-unquarantine-device) - Unquarantine an endpoint \
-[mitigate threat](#action-mitigate-threat) - Mitigate an identified threat \
-[abort scan](#action-abort-scan) - Stop a Full Disk Scan on endpoint/agent \
-[shutdown endpoint](#action-shutdown-endpoint) - Shutdown an endpoint \
-[broadcast message](#action-broadcast-message) - Send a Message through the Agents that users can see \
-[get file](#action-get-file) - Fetch files from endpoints to analyze the root of threats \
-[fetch firewall rules](#action-fetch-firewall-rules) - Fetch the firewall rules \
-[fetch firewall logs](#action-fetch-firewall-logs) - Fetch the firewall logs \
-[scan endpoint](#action-scan-endpoint) - Start a Full Disk Scan on endpoint/agent \
-[get endpoint info](#action-get-endpoint-info) - Get detailed information about an endpoint/agent \
-[get threat info](#action-get-threat-info) - Get detailed information about a threat \
-[list applications](#action-list-applications) - Get the applications, and their data, installed on endpoints \
-[get cves](#action-get-cves) - Get known CVEs for applications that are installed on endpoints with Application Risk-enabled Agents \
-[get devicecontrol events](#action-get-devicecontrol-events) - Get the data of Device Control events on Windows and macOS endpoints \
-[list firewall rules](#action-list-firewall-rules) - Get the Firewall Control rules for a scope specified \
-[create firewall rule](#action-create-firewall-rule) - Create a Firewall Control rule \
-[hash reputation](#action-hash-reputation) - Get the reputation of a hash, given the required SHA1 \
-[get threat notes](#action-get-threat-notes) - Get the threat notes \
-[add threat note](#action-add-threat-note) - Add a threat note to multiple threats \
-[export threat timeline](#action-export-threat-timeline) - Export a threat's timeline \
-[export mitigation report](#action-export-mitigation-report) - Export the mitigation report of threat \
-[export threats](#action-export-threats) - Export data of threats \
-[fetch threat file](#action-fetch-threat-file) - Fetch a file associated with the threat \
-[update threat analystverdict](#action-update-threat-analystverdict) - Change the verdict of a threat, as determined by a Console user \
-[get threat timeline](#action-get-threat-timeline) - Get a threat's timeline \
-[update threat incident](#action-update-threat-incident) - Update the incident details of a threat \
-[download from cloud](#action-download-from-cloud) - Download threat file from cloud \
+[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity using supplied configuration <br>
+[block hash](#action-block-hash) - Add a file hash to the global blocklist <br>
+[unblock hash](#action-unblock-hash) - Remove a hash from the global blocklist <br>
+[quarantine device](#action-quarantine-device) - Quarantine an endpoint <br>
+[unquarantine device](#action-unquarantine-device) - Unquarantine an endpoint <br>
+[mitigate threat](#action-mitigate-threat) - Mitigate an identified threat <br>
+[abort scan](#action-abort-scan) - Stop a Full Disk Scan on endpoint/agent <br>
+[shutdown endpoint](#action-shutdown-endpoint) - Shutdown an endpoint <br>
+[broadcast message](#action-broadcast-message) - Send a Message through the Agents that users can see <br>
+[get file](#action-get-file) - Fetch files from endpoints to analyze the root of threats <br>
+[fetch firewall rules](#action-fetch-firewall-rules) - Fetch the firewall rules <br>
+[fetch firewall logs](#action-fetch-firewall-logs) - Fetch the firewall logs <br>
+[scan endpoint](#action-scan-endpoint) - Start a Full Disk Scan on endpoint/agent <br>
+[get endpoint info](#action-get-endpoint-info) - Get detailed information about an endpoint/agent <br>
+[get threat info](#action-get-threat-info) - Get detailed information about a threat <br>
+[list applications](#action-list-applications) - Get the applications, and their data, installed on endpoints <br>
+[get cves](#action-get-cves) - Get known CVEs for applications that are installed on endpoints with Application Risk-enabled Agents <br>
+[get devicecontrol events](#action-get-devicecontrol-events) - Get the data of Device Control events on Windows and macOS endpoints <br>
+[list firewall rules](#action-list-firewall-rules) - Get the Firewall Control rules for a scope specified <br>
+[create firewall rule](#action-create-firewall-rule) - Create a Firewall Control rule <br>
+[hash reputation](#action-hash-reputation) - Get the reputation of a hash, given the required SHA1 <br>
+[get threat notes](#action-get-threat-notes) - Get the threat notes <br>
+[add threat note](#action-add-threat-note) - Add a threat note to multiple threats <br>
+[export threat timeline](#action-export-threat-timeline) - Export a threat's timeline <br>
+[export mitigation report](#action-export-mitigation-report) - Export the mitigation report of threat <br>
+[export threats](#action-export-threats) - Export data of threats <br>
+[fetch threat file](#action-fetch-threat-file) - Fetch a file associated with the threat <br>
+[update threat analystverdict](#action-update-threat-analystverdict) - Change the verdict of a threat, as determined by a Console user <br>
+[get threat timeline](#action-get-threat-timeline) - Get a threat's timeline <br>
+[update threat incident](#action-update-threat-incident) - Update the incident details of a threat <br>
+[download from cloud](#action-download-from-cloud) - Download threat file from cloud <br>
 [on poll](#action-on-poll) - Callback action for the on_poll ingest functionality
 
 ## action: 'test connectivity'
 
 Validate the asset configuration for connectivity using supplied configuration
 
-Type: **test** \
+Type: **test** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -72,7 +72,7 @@ No Output
 
 Add a file hash to the global blocklist
 
-Type: **contain** \
+Type: **contain** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -101,7 +101,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Remove a hash from the global blocklist
 
-Type: **correct** \
+Type: **correct** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -126,7 +126,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Quarantine an endpoint
 
-Type: **contain** \
+Type: **contain** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -151,7 +151,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Unquarantine an endpoint
 
-Type: **correct** \
+Type: **correct** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -176,7 +176,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Mitigate an identified threat
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 Mitigate threats such as <b>kill</b>, <b>quarantine</b>, <b>remediate</b>, or <b>rollback-remediation</b>.
@@ -205,7 +205,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Stop a Full Disk Scan on endpoint/agent
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -230,7 +230,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Shutdown an endpoint
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -255,7 +255,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Send a Message through the Agents that users can see
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -282,7 +282,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Fetch files from endpoints to analyze the root of threats
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -311,7 +311,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Fetch the firewall rules
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -336,7 +336,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Fetch the firewall logs
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -361,7 +361,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Start a Full Disk Scan on endpoint/agent
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -386,7 +386,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get detailed information about an endpoint/agent
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -422,7 +422,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get detailed information about a threat
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -472,7 +472,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get the applications, and their data, installed on endpoints
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -520,7 +520,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get known CVEs for applications that are installed on endpoints with Application Risk-enabled Agents
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -550,7 +550,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get the data of Device Control events on Windows and macOS endpoints
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -594,7 +594,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get the Firewall Control rules for a scope specified
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -650,7 +650,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Create a Firewall Control rule
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -683,7 +683,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get the reputation of a hash, given the required SHA1
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -708,7 +708,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get the threat notes
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -739,7 +739,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Add a threat note to multiple threats
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -766,7 +766,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Export a threat's timeline
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -791,7 +791,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Export the mitigation report of threat
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -816,7 +816,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Export data of threats
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -841,7 +841,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Fetch a file associated with the threat
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -869,7 +869,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Change the verdict of a threat, as determined by a Console user
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -896,7 +896,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Get a threat's timeline
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -945,7 +945,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Update the incident details of a threat
 
-Type: **generic** \
+Type: **generic** <br>
 Read only: **False**
 
 #### Action Parameters
@@ -974,7 +974,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Download threat file from cloud
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -1000,7 +1000,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Callback action for the on_poll ingest functionality
 
-Type: **ingest** \
+Type: **ingest** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -1021,7 +1021,7 @@ ______________________________________________________________________
 
 Auto-generated Splunk SOAR Connector documentation.
 
-Copyright 2025 Splunk Inc.
+Copyright 2026 Splunk Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

@@ -1,5 +1,5 @@
 # File: sentinelone_connector.py
-# Copyright (c) SentinelOne, 2018-2025
+# Copyright (c) SentinelOne, 2018-2026
 
 
 #
@@ -150,7 +150,7 @@ class SentineloneConnector(BaseConnector):
         header = self.HEADER
         header["Authorization"] = f"APIToken {self.token}"
         body = {"data": {"apiToken": self.token}}
-        ret_val, response = self._make_rest_call(
+        ret_val, _response = self._make_rest_call(
             "/web/api/v2.1/accounts", action_result, params=None, headers=header, data=json.dumps(body), method="get"
         )
         if phantom.is_fail(ret_val):
@@ -471,7 +471,7 @@ class SentineloneConnector(BaseConnector):
             header = self.HEADER
             header["Authorization"] = f"APIToken {self.token}"
             body = {"data": {"message": message}, "filter": {"ids": ret_val}}
-            ret_val, response = self._make_rest_call(
+            ret_val, _response = self._make_rest_call(
                 "/web/api/v2.1/agents/actions/broadcast", action_result, headers=header, data=json.dumps(body), method="post"
             )
             self.save_progress(f"Ret_val: {ret_val}")
@@ -506,7 +506,7 @@ class SentineloneConnector(BaseConnector):
             header = self.HEADER
             header["Authorization"] = f"APIToken {self.token}"
             body = {"data": {"files": [file_path], "password": password}}
-            ret_val, response = self._make_rest_call(
+            ret_val, _response = self._make_rest_call(
                 f"/web/api/v2.1/agents/{ret_val}/actions/fetch-files", action_result, headers=header, data=json.dumps(body), method="post"
             )
             self.save_progress(f"Ret_val: {ret_val}")
@@ -544,7 +544,7 @@ class SentineloneConnector(BaseConnector):
             header = self.HEADER
             header["Authorization"] = f"APIToken {self.token}"
             body = {"data": {"format": "native", "state": "initial"}, "filter": {"ids": ret_val}}
-            ret_val, response = self._make_rest_call(
+            ret_val, _response = self._make_rest_call(
                 "/web/api/v2.1/agents/actions/fetch-firewall-rules",
                 action_result,
                 params=None,
@@ -579,7 +579,7 @@ class SentineloneConnector(BaseConnector):
             header = self.HEADER
             header["Authorization"] = f"APIToken {self.token}"
             body = {"data": {"reportLog": "true", "reportMgmt": "true"}, "filter": {"ids": ret_val}}
-            ret_val, response = self._make_rest_call(
+            ret_val, _response = self._make_rest_call(
                 "/web/api/v2.1/agents/actions/firewall-logging", action_result, params=None, headers=header, data=json.dumps(body), method="post"
             )
             if phantom.is_fail(ret_val):
