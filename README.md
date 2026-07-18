@@ -16,6 +16,7 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 -------- | -------- | ---- | -----------
 **sentinelone_console_url** | required | string | SentinelOne Console URL |
 **sentinelone_api_token** | required | password | SentinelOne API Token |
+**verify_server_cert** | optional | boolean | Verify server SSL certificate |
 **max_containers** | required | numeric | Maximum Number of Containers to Ingest (limit=1000) |
 
 ### Supported Actions

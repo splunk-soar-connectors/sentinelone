@@ -138,7 +138,7 @@ class SentineloneConnector(BaseConnector):
         url = f"{self._base_url}{endpoint}"
         self._log.info(f"action=make_rest_call url={url}")
         try:
-            r = request_func(url, verify=config.get("verify_server_cert", False), timeout=120, **kwargs)
+            r = request_func(url, verify=config.get("verify_server_cert", True), timeout=120, **kwargs)
         except Exception as e:
             err_message = self._get_error_message_from_exception(e)
             return RetVal(action_result.set_status(phantom.APP_ERROR, f"Error Connecting to server. Details: {err_message}"), resp_json)

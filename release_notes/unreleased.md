@@ -1,3 +1,3 @@
 **Unreleased**
 
-* Updated connector development tooling.
+* Enables server certificate validation by default.
