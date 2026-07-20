@@ -16,7 +16,7 @@
             "name": "Abhijeeta Kamble"
         }
     ],
-    "license": "Copyright (c) SentinelOne, 2018-2025",
+    "license": "Copyright (c) SentinelOne, 2018-2026",
     "app_version": "2.2.9",
     "utctime_updated": "2025-04-28T19:30:42.130261Z",
     "package_name": "phantom_sentinelone",
@@ -37,12 +37,18 @@
             "required": true,
             "order": 1
         },
+        "verify_server_cert": {
+            "description": "Verify server SSL certificate",
+            "data_type": "boolean",
+            "default": true,
+            "order": 2
+        },
         "max_containers": {
             "description": "Maximum Number of Containers to Ingest (limit=1000)",
             "data_type": "numeric",
             "default": 100,
             "required": true,
-            "order": 2
+            "order": 3
         }
     },
     "actions": [
@@ -3427,6 +3433,14 @@
         }
     ],
     "pip39_dependencies": {
+        "wheel": [
+            {
+                "module": "chardet",
+                "input_file": "wheels/shared/chardet-3.0.4-py2.py3-none-any.whl"
+            }
+        ]
+    },
+    "pip313_dependencies": {
         "wheel": [
             {
                 "module": "chardet",

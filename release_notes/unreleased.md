@@ -1,1 +1,4 @@
 **Unreleased**
+
+* Enables server certificate validation by default.
+* Safely encodes threat identifiers used in API paths.

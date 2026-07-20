@@ -1,5 +1,5 @@
 # File: __init__.py
-# Copyright (c) SentinelOne, 2018-2025
+# Copyright (c) SentinelOne, 2018-2026
 
 
 #
