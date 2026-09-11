@@ -4,7 +4,7 @@ Publisher: SentinelOne <br>
 Connector Version: 2.2.10 <br>
 Product Vendor: SentinelOne <br>
 Product Name: SentinelOne <br>
-Minimum Product Version: 5.1.0
+Minimum Product Version: 7.0.0
 
 This app integrates with the SentinelOne Singularity platform to perform prevention, detection, remediation, and forensic endpoint management tasks
 
