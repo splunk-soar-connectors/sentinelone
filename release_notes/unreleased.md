@@ -1,1 +1,3 @@
 **Unreleased**
+
+* Update the bundled readme to reflect the minimum supported Splunk SOAR version.
